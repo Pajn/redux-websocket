@@ -1,17 +1,17 @@
 import {clientError, RpcSettings} from './common';
-import {Protocol, WebSocketServer} from '../server';
+import {Protocol} from '../common';
+import {WebSocketServer} from '../server';
 export {clientError};
 
 const procedures = {};
 const webSocketProtocol: Protocol = {
-  async onmessage({id, className, methodName, args}): Promise<void> {
+  async onmessage({id, className, methodName, args}, respond): Promise<void> {
     const object = procedures[className];
     if (!object) return console.log('no such class');
     const procedure = object[methodName];
     if (!procedure) return console.log('no such method');
     try {
       const value = await procedure.apply(null, args);
-      console.log({id, value});
       this.send({id, value});
     } catch (error) {
       console.warn(error);
@@ -19,8 +19,7 @@ const webSocketProtocol: Protocol = {
         console.warn(error.stack);
       }
       error = (error && error.clientError) || 'Unkown Error';
-      console.log({id, error});
-      this.send({id, error});
+      respond({id, error});
     }
   }
 };

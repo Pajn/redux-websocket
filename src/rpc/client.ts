@@ -1,5 +1,6 @@
 import {clientError, RpcSettings} from './common';
-import {Protocol, WebSocketClient} from '../client';
+import {Protocol} from '../common';
+import {WebSocketClient} from '../client';
 export {clientError};
 
 const getId = (() => {

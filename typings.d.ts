@@ -1,17 +1,19 @@
 declare module 'websocket-redux/lib/common' {
   export interface Protocol {
-    onmessage: (message: any) => void;
+    onopen?: () => void;
+    onmessage: (message: any, respond: (message: Object) => void) => void;
     send?: (message: Object) => void;
+  }
+
+  export interface WebSocketConnection {
+    registerProtocol(name: string, protocol: Protocol): void;
   }
 }
 
 declare module 'websocket-redux/lib/client' {
-  export interface Protocol {
-    onmessage: (message: any) => void;
-    send?: (message: Object) => void;
-  }
+  import {Protocol, WebSocketConnection} from 'websocket-redux/lib/common';
 
-  export class WebSocketClient {
+  export class WebSocketClient implements WebSocketConnection {
     protocols: {};
     socket: WebSocket;
     constructor(url: any);
@@ -22,13 +24,9 @@ declare module 'websocket-redux/lib/client' {
 }
 
 declare module 'websocket-redux/lib/server' {
-  // import {Server as HttpServer} from 'http';
+  import {Protocol, WebSocketConnection} from 'websocket-redux/lib/common';
 
-  export interface Protocol {
-    onmessage: (message: any) => void;
-    send?: (message: Object) => void;
-  }
-  export class WebSocketServer {
+  export class WebSocketServer implements WebSocketConnection {
     constructor(httpServer);
     registerProtocol(name: string, protocol: Protocol): void;
   }
@@ -36,6 +34,17 @@ declare module 'websocket-redux/lib/server' {
     server: WebSocketServer;
     actions: any;
   }): (store: any) => (next: any) => (action: any) => any;
+}
+
+declare module 'websocket-redux/lib/sync' {
+  import {Protocol, WebSocketConnection} from 'websocket-redux/lib/common';
+
+  type Settings = {
+    connection: WebSocketConnection,
+    whitelist: string[],
+  };
+
+  export function syncStoreEnhancer(settings: Settings): (next) => (reducer, initialState) => any;
 }
 
 declare module 'websocket-redux/lib/rpc/common' {

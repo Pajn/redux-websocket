@@ -1,7 +1,6 @@
-import {Protocol} from './common';
-export {Protocol};
+import {Protocol, WebSocketConnection} from './common';
 
-export class WebSocketClient {
+export class WebSocketClient implements WebSocketConnection {
   protocols = {};
   socket: WebSocket;
 
@@ -21,6 +20,13 @@ export class WebSocketClient {
       if (onOpen) {
         onOpen();
       }
+      Object.keys(this.protocols).forEach(protocolName => {
+        const protocol = this.protocols[protocolName];
+
+        if (protocol.onopen) {
+          protocol.onopen();
+        }
+      });
     };
 
     this.socket.onclose = () => {

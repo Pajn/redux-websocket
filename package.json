@@ -14,9 +14,7 @@
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
-    "reconnecting-websocket": "^1.0.4",
-    "websocket": "^1.0.22",
-    "ws": "^1.0.1"
+    "websocket": "^1.0.22"
   },
   "devDependencies": {
     "babel": "^6.3.26",
