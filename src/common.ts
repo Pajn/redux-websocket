@@ -8,11 +8,15 @@ export interface WebSocketConnection {
   registerProtocol(name: string, protocol: Protocol): void;
 }
 
+export interface Actions {
+  [type: string]: Action<any>;
+}
+
 export interface Action<T> {
   type: string;
   payload: T;
-  meta: {
-    toServer: boolean;
-    toClient: boolean;
+  meta?: {
+    toServer?: boolean;
+    toClient?: boolean;
   };
 }

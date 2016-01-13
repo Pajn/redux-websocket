@@ -9,7 +9,8 @@
   "filesGlob": [
     "*.ts",
     "src/**/*.ts",
-    "typings/*.ts"
+    "typings/*.ts",
+    "node_modules/redux-decorated/typings.d.ts"
   ],
   "files": [],
   "formatCodeOptions": {

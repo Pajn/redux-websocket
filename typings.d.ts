@@ -1,4 +1,4 @@
-declare module 'websocket-redux/lib/common' {
+declare module 'redux-websocket/lib/common' {
   export interface Protocol {
     onopen?: () => void;
     onmessage: (message: any, respond: (message: Object) => void) => void;
@@ -10,8 +10,8 @@ declare module 'websocket-redux/lib/common' {
   }
 }
 
-declare module 'websocket-redux/lib/client' {
-  import {Protocol, WebSocketConnection} from 'websocket-redux/lib/common';
+declare module 'redux-websocket/lib/client' {
+  import {Protocol, WebSocketConnection} from 'redux-websocket/lib/common';
 
   export class WebSocketClient implements WebSocketConnection {
     protocols: {};
@@ -23,8 +23,8 @@ declare module 'websocket-redux/lib/client' {
       (store: any) => (next: any) => (action: any) => any;
 }
 
-declare module 'websocket-redux/lib/server' {
-  import {Protocol, WebSocketConnection} from 'websocket-redux/lib/common';
+declare module 'redux-websocket/lib/server' {
+  import {Protocol, WebSocketConnection} from 'redux-websocket/lib/common';
 
   export class WebSocketServer implements WebSocketConnection {
     constructor(httpServer);
@@ -36,8 +36,8 @@ declare module 'websocket-redux/lib/server' {
   }): (store: any) => (next: any) => (action: any) => any;
 }
 
-declare module 'websocket-redux/lib/sync' {
-  import {Protocol, WebSocketConnection} from 'websocket-redux/lib/common';
+declare module 'redux-websocket/lib/sync' {
+  import {Protocol, WebSocketConnection} from 'redux-websocket/lib/common';
 
   type Settings = {
     connection: WebSocketConnection,
@@ -47,7 +47,7 @@ declare module 'websocket-redux/lib/sync' {
   export function syncStoreEnhancer(settings: Settings): (next) => (reducer, initialState) => any;
 }
 
-declare module 'websocket-redux/lib/rpc/common' {
+declare module 'redux-websocket/lib/rpc/common' {
   export type RpcSettings = {
     name?: string;
     timeout?: number;
@@ -55,26 +55,26 @@ declare module 'websocket-redux/lib/rpc/common' {
   export function clientError(message: string);
 }
 
-declare module 'websocket-redux/lib/rpc/client' {
-  import {WebSocketClient} from 'websocket-redux/lib/client';
-  import {clientError, RpcSettings} from 'websocket-redux/lib/rpc/common';
+declare module 'redux-websocket/lib/rpc/client' {
+  import {WebSocketClient} from 'redux-websocket/lib/client';
+  import {clientError, RpcSettings} from 'redux-websocket/lib/rpc/common';
   export {clientError};
 
   export function remoteProcedures(settings?: RpcSettings): ClassDecorator;
   export function useWebSocketClient(client: WebSocketClient): void;
 }
 
-declare module 'websocket-redux/lib/rpc/server' {
-  import {WebSocketServer} from 'websocket-redux/lib/server';
-  import {clientError, RpcSettings} from 'websocket-redux/lib/rpc/common';
+declare module 'redux-websocket/lib/rpc/server' {
+  import {WebSocketServer} from 'redux-websocket/lib/server';
+  import {clientError, RpcSettings} from 'redux-websocket/lib/rpc/common';
   export {clientError};
 
   export function remoteProcedures(settings?: RpcSettings): ClassDecorator;
   export function useWebSocketServer(server: WebSocketServer): void;
 }
 
-declare module 'websocket-redux/lib/rpc' {
-  import {clientError, RpcSettings} from 'websocket-redux/lib/rpc/common';
+declare module 'redux-websocket/lib/rpc' {
+  import {clientError, RpcSettings} from 'redux-websocket/lib/rpc/common';
   export {clientError};
 
   export function remoteProcedures(settings?: RpcSettings): ClassDecorator;

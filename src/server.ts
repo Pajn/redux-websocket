@@ -1,7 +1,7 @@
-import {updateIn} from 'decorated-redux';
+import {updateIn} from 'redux-decorated';
 import {Server as HttpServer} from 'http';
 import {server as WebSocket, connection} from 'websocket';
-import {Protocol, WebSocketConnection} from './common';
+import {Actions, Protocol, WebSocketConnection} from './common';
 
 export class WebSocketServer implements WebSocketConnection {
   connections: Array<connection> = [];
@@ -51,8 +51,8 @@ export class WebSocketServer implements WebSocketConnection {
 }
 
 type Settings = {
+  actions: Actions,
   server: WebSocketServer,
-  actions: any,
 };
 
 export const websocketMiddleware = ({server, actions}: Settings) => store => next => {

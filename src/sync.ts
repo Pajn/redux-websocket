@@ -1,4 +1,4 @@
-import {removeIn, updateIn} from 'decorated-redux';
+import {removeIn, updateIn} from 'redux-decorated';
 import {Protocol, WebSocketConnection} from './common';
 
 const dispatchAction = 'dispatchAction';
