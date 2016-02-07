@@ -41,7 +41,8 @@ declare module 'redux-websocket/lib/sync' {
 
   type Settings = {
     connection: WebSocketConnection,
-    whitelist: string[],
+    keys: string[],
+    skipVersion?: string[],
   };
 
   export function syncStoreEnhancer(settings: Settings): (next) => (reducer, initialState) => any;

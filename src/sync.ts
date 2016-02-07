@@ -6,8 +6,8 @@ const checkVersion = 'checkVersion';
 
 type Settings = {
   connection: WebSocketConnection,
-  whitelist?: string[],
-  blacklist?: string[],
+  keys: string[],
+  skipVersion?: string[],
 };
 
 type InitialSyncPayload = {
@@ -41,7 +41,7 @@ const actions = {
   },
 };
 
-function findChanges(newState, oldState, path = []) {
+function findChanges(newState = {}, oldState = {}, path = []) {
   let newKeys = Object.keys(newState);
 
   let newChanges = [];
@@ -80,7 +80,9 @@ function findChanges(newState, oldState, path = []) {
   return newChanges;
 }
 
-const syncMiddleware = ({connection, blacklist, whitelist}: Settings) => store =>
+let maybeCheckVersion;
+
+const syncMiddleware = ({connection, keys, skipVersion}: Settings) => store =>
     next => {
 
   let webSocketOpened = false;
@@ -109,6 +111,13 @@ const syncMiddleware = ({connection, blacklist, whitelist}: Settings) => store =
             }
           });
 
+          if (skipVersion) {
+            skipVersion.forEach(key => {
+              ret.state[key] = state[key];
+              updated = true;
+            });
+          }
+
           if (updated) {
             respond({
               type: dispatchAction,
@@ -127,11 +136,11 @@ const syncMiddleware = ({connection, blacklist, whitelist}: Settings) => store =
     }
   };
 
-  function maybeCheckVersion() {
+  maybeCheckVersion = () => {
     if (webSocketOpened && rehydrationCompleted) {
       protocol.send({type: checkVersion, payload: {versions: store.getState().versions}});
     }
-  }
+  };
 
   connection.registerProtocol('sync', protocol);
 
@@ -149,9 +158,11 @@ const syncMiddleware = ({connection, blacklist, whitelist}: Settings) => store =
 
     const updates = [];
 
-    for (const key of whitelist) {
+    for (const key of keys) {
       const changes = findChanges(newState[key], oldState[key]);
-      updates.push({key, changes, version: newState.versions[key]});
+      if (changes.length > 0) {
+        updates.push({key, changes, version: newState.versions[key]});
+      }
     }
 
     if (updates.length) {
@@ -163,7 +174,7 @@ const syncMiddleware = ({connection, blacklist, whitelist}: Settings) => store =
   };
 };
 
-const syncReducer = ({blacklist, whitelist}: Settings) => reducer => {
+const syncReducer = ({keys, skipVersion}: Settings) => reducer => {
 
   return (state, action) => {
     let newState;
@@ -175,18 +186,20 @@ const syncReducer = ({blacklist, whitelist}: Settings) => reducer => {
 
         state = Object.assign({}, state, initialState);
         Object.assign(state.versions, versions);
+
         return state;
 
       case actions.updateSyncedState.type:
+        let shouldCheckVersions = false;
         newState = state;
 
         const payload = (action.payload as UpdatePayload)
-            .filter(({key}) => whitelist
-              ? whitelist.indexOf(key) !== -1
-              : blacklist.indexOf(key) === -1);
+            .filter(({key}) => keys.indexOf(key) !== -1);
 
         for (const {key, version, changes} of payload) {
-          if (version !== state.versions[key] + 1) continue;
+          if (version > state.versions[key] + 1) {
+            shouldCheckVersions = true;
+          } else if (version !== undefined && version !== state.versions[key] + 1) continue;
 
           newState = updateIn(['versions', key], version, newState);
 
@@ -197,19 +210,25 @@ const syncReducer = ({blacklist, whitelist}: Settings) => reducer => {
           }
         }
 
+        if (shouldCheckVersions && maybeCheckVersion) {
+          maybeCheckVersion();
+        }
+
         return newState;
 
       default:
         newState = reducer(state, action);
         if (!state) {
           const versions = {};
-          for (const key of whitelist) {
-            versions[key] = 0;
+          for (const key of keys) {
+            if (skipVersion.indexOf(key) === -1) {
+              versions[key] = 0;
+            }
           }
           newState = Object.assign({}, newState, {versions});
         } else {
-          for (const key of whitelist) {
-            if (state[key] !== newState[key]) {
+          for (const key of keys) {
+            if (state[key] !== newState[key] && skipVersion.indexOf(key) === -1) {
               newState = updateIn(['versions', key], (state.versions[key] || 0) + 1, newState);
             }
           }
