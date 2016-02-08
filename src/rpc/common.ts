@@ -4,5 +4,9 @@ export type RpcSettings = {
 };
 
 export function clientError(message: string) {
-  return {clientError: message};
+  return {
+    name: 'clientError',
+    message: message,
+    clientError: message,
+  };
 }
