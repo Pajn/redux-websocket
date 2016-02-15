@@ -9,12 +9,11 @@ export interface WebSocketConnection {
 }
 
 export interface Actions {
-  [type: string]: Action<any>;
+  [type: string]: Action;
 }
 
-export interface Action<T> {
+export interface Action {
   type: string;
-  payload: T;
   meta?: {
     toServer?: boolean;
     toClient?: boolean;

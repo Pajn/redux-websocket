@@ -8,6 +8,7 @@ type Settings = {
   connection: WebSocketConnection,
   keys: string[],
   skipVersion?: string[],
+  waitForAction?: string,
 };
 
 type InitialSyncPayload = {
@@ -48,7 +49,7 @@ function findChanges(newState = {}, oldState = {}, path = []) {
 
   for (const key of newKeys) {
 
-    if (newChanges.length / newKeys.length > 0.4) {
+    if (newChanges.length > 2 && newChanges.length / newKeys.length > 0.4) {
       break;
     }
 
@@ -73,7 +74,7 @@ function findChanges(newState = {}, oldState = {}, path = []) {
     }
   }
 
-  if (newChanges.length / newKeys.length > 0.4) {
+  if (newChanges.length > 2 && newChanges.length / newKeys.length > 0.4) {
     return [{path, value: newState}];
   }
 
@@ -82,8 +83,11 @@ function findChanges(newState = {}, oldState = {}, path = []) {
 
 let maybeCheckVersion;
 
-const syncMiddleware = ({connection, keys, skipVersion}: Settings) => store =>
+const syncMiddleware = ({connection, keys, skipVersion, waitForAction}: Settings) => store =>
     next => {
+  if (waitForAction === undefined) {
+    waitForAction = 'persist/COMPLETE';
+  }
 
   let webSocketOpened = false;
   let rehydrationCompleted = false;
@@ -99,13 +103,16 @@ const syncMiddleware = ({connection, keys, skipVersion}: Settings) => store =>
         case checkVersion:
           const {versions} = payload;
           const state = store.getState();
+          const stateVersions = state.versions || {};
 
           const ret = {versions: {}, state: {}};
           let updated = false;
 
-          Object.keys(state.versions).forEach(key => {
-            if (state.versions[key] !== versions[key]) {
-              ret.versions[key] = state.versions[key];
+          Object.keys(stateVersions).forEach(key => {
+            if (stateVersions[key] !== versions[key] ||
+                // If there exists no version we need to push out initial state
+                versions[key] === 0) {
+              ret.versions[key] = stateVersions[key];
               ret.state[key] = state[key];
               updated = true;
             }
@@ -149,7 +156,7 @@ const syncMiddleware = ({connection, keys, skipVersion}: Settings) => store =>
     next(action);
     const newState = store.getState();
 
-    if (action.type === 'persist/COMPLETE') {
+    if (!waitForAction || action.type === waitForAction) {
       rehydrationCompleted = true;
       maybeCheckVersion();
     }
@@ -166,18 +173,22 @@ const syncMiddleware = ({connection, keys, skipVersion}: Settings) => store =>
     }
 
     if (updates.length) {
-      next(Object.assign(
-        {payload: updates},
-        actions.updateSyncedState)
-      );
+      protocol.send({
+        type: dispatchAction,
+        payload: Object.assign({payload: updates}, actions.updateSyncedState),
+      });
     }
   };
 };
 
 const syncReducer = ({keys, skipVersion}: Settings) => reducer => {
+  function maintainVersion(key) {
+    return !skipVersion || skipVersion.indexOf(key) === -1;
+  }
 
   return (state, action) => {
     let newState;
+    const stateVersions = state.versions || {};
 
     switch (action.type) {
       case actions.initialSyncedState.type:
@@ -185,7 +196,7 @@ const syncReducer = ({keys, skipVersion}: Settings) => reducer => {
         const initialState = action.payload.state;
 
         state = Object.assign({}, state, initialState);
-        Object.assign(state.versions, versions);
+        Object.assign(stateVersions, versions);
 
         return state;
 
@@ -197,9 +208,9 @@ const syncReducer = ({keys, skipVersion}: Settings) => reducer => {
             .filter(({key}) => keys.indexOf(key) !== -1);
 
         for (const {key, version, changes} of payload) {
-          if (version > state.versions[key] + 1) {
+          if (version > stateVersions[key] + 1) {
             shouldCheckVersions = true;
-          } else if (version !== undefined && version !== state.versions[key] + 1) continue;
+          } else if (version !== undefined && version !== stateVersions[key] + 1) continue;
 
           newState = updateIn(['versions', key], version, newState);
 
@@ -220,16 +231,15 @@ const syncReducer = ({keys, skipVersion}: Settings) => reducer => {
         newState = reducer(state, action);
         if (!state) {
           const versions = {};
-          for (const key of keys) {
-            if (newState[key] && (!skipVersion || skipVersion.indexOf(key) === -1)) {
-              versions[key] = 1;
-            }
+          for (const key of keys.filter(maintainVersion)) {
+            versions[key] = 0;
           }
           newState = Object.assign({}, newState, {versions});
         } else {
           for (const key of keys) {
-            if (state[key] !== newState[key] && (!skipVersion || skipVersion.indexOf(key) === -1)) {
-              newState = updateIn(['versions', key], (state.versions[key] || 0) + 1, newState);
+            if (state[key] !== newState[key] && maintainVersion(key)) {
+              const nextVersion = (stateVersions[key] || 0) + 1;
+              newState = updateIn(['versions', key], nextVersion, newState);
             }
           }
         }
@@ -247,3 +257,7 @@ export const syncStoreEnhancer = (settings: Settings) => next => (reducer, initi
 
   return store;
 };
+
+export function noopReducer(state) {
+  return state;
+}

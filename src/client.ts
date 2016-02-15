@@ -1,4 +1,4 @@
-import {Protocol, WebSocketConnection} from './common';
+import {Action, Actions, Protocol, WebSocketConnection} from './common';
 
 export class WebSocketClient implements WebSocketConnection {
   protocols = {};
@@ -43,7 +43,12 @@ export class WebSocketClient implements WebSocketConnection {
   }
 }
 
-export const websocketMiddleware = (client: WebSocketClient) => store => next => {
+type Settings = {
+  actions: Actions,
+  client: WebSocketClient,
+};
+
+export const websocketMiddleware = ({client, actions}: Settings) => store => next => {
 
   const protocol: Protocol = {
     onmessage({action}) {
@@ -53,8 +58,9 @@ export const websocketMiddleware = (client: WebSocketClient) => store => next =>
 
   client.registerProtocol('action', protocol);
 
-  return action => {
-    if (action.meta && action.meta.toServer) {
+  return (action: Action) => {
+    const meta = action.meta || (actions[action.type] && actions[action.type].meta);
+    if (meta && meta.toServer) {
       protocol.send({action});
     }
     return next(action);

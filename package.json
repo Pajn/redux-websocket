@@ -1,8 +1,9 @@
 {
   "name": "redux-websocket",
-  "version": "0.1.0",
+  "version": "0.2.1",
   "description": "",
   "main": "index.js",
+  "typings": "./typings.d.ts",
   "scripts": {
     "prepublish": "npm-run-all prepublish:*",
     "prepublish:copy_base_config": "cp tsconfig.base.json tsconfig.json",

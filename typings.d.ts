@@ -46,39 +46,67 @@ declare module 'redux-websocket/lib/sync' {
   };
 
   export function syncStoreEnhancer(settings: Settings): (next) => (reducer, initialState) => any;
+
+  export function noopReducer(state);
 }
 
-declare module 'redux-websocket/lib/rpc/common' {
+declare module 'redux-websocket/lib/rpc' {
   export type RpcSettings = {
+    /**
+     * Name for the RPC namespace, if not specified the classname will be used.
+     */
     name?: string;
+    /**
+     * Timeout in ms for how long the client will wait for a response before rejecting.
+     * Defaults to 10000.
+     */
     timeout?: number;
   };
+
   export function clientError(message: string);
+
+  export interface RemoteProceduresDecorator {
+    (settings: RpcSettings): ClassDecorator;
+  }
 }
 
 declare module 'redux-websocket/lib/rpc/client' {
   import {WebSocketClient} from 'redux-websocket/lib/client';
-  import {clientError, RpcSettings} from 'redux-websocket/lib/rpc/common';
+  import {clientError, RemoteProceduresDecorator, RpcSettings} from 'redux-websocket/lib/rpc';
   export {clientError};
 
-  export function remoteProcedures(settings?: RpcSettings): ClassDecorator;
-  export function useWebSocketClient(client: WebSocketClient): void;
+  type RpcClientSettings = {
+    /**
+     * Optional id to use for connecting to an RPC server with a non-empty id
+     */
+    id?: string|number,
+    socket: WebSocketClient,
+  }
+
+  type RpcClient = {
+    remoteProcedures: RemoteProceduresDecorator,
+  }
+
+  export function createRpcClient({socket, id}: RpcClientSettings): RpcClient;
 }
 
 declare module 'redux-websocket/lib/rpc/server' {
   import {WebSocketServer} from 'redux-websocket/lib/server';
-  import {clientError, RpcSettings} from 'redux-websocket/lib/rpc/common';
+  import {clientError, RemoteProceduresDecorator, RpcSettings} from 'redux-websocket/lib/rpc';
   export {clientError};
 
-  export function remoteProcedures(settings?: RpcSettings): ClassDecorator;
-  export function useWebSocketServer(server: WebSocketServer): void;
-}
+  type RpcServerSettings = {
+    /**
+     * Optional id to use when handling multiple RPC servers on a single WebSocketServer.
+     * The same id must be specified on the client.
+     */
+    id?: string|number,
+    socket: WebSocketServer,
+  }
 
-declare module 'redux-websocket/lib/rpc' {
-  import {clientError, RpcSettings} from 'redux-websocket/lib/rpc/common';
-  export {clientError};
+  type RpcServer = {
+    remoteProcedures: RemoteProceduresDecorator,
+  }
 
-  export function remoteProcedures(settings?: RpcSettings): ClassDecorator;
-  export function useClient(): void;
-  export function useServer(): void;
+  export function createRpcServer({socket, id}: RpcServerSettings): RpcServer;
 }

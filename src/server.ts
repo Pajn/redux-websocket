@@ -1,7 +1,7 @@
-import {updateIn} from 'redux-decorated';
 import {Server as HttpServer} from 'http';
+import {updateIn} from 'redux-decorated';
 import {server as WebSocket, connection} from 'websocket';
-import {Actions, Protocol, WebSocketConnection} from './common';
+import {Action, Actions, Protocol, WebSocketConnection} from './common';
 
 export class WebSocketServer implements WebSocketConnection {
   connections: Array<connection> = [];
@@ -61,7 +61,7 @@ export const websocketMiddleware = ({server, actions}: Settings) => store => nex
     onmessage({action}) {
       if (actions[action.type]) {
         const {meta} = actions[action.type];
-        if (meta.toServer) {
+        if (meta && meta.toServer) {
           next(action);
         }
       }
@@ -70,7 +70,7 @@ export const websocketMiddleware = ({server, actions}: Settings) => store => nex
 
   server.registerProtocol('action', protocol);
 
-  return action => {
+  return (action: Action) => {
     const meta = action.meta || (actions[action.type] && actions[action.type].meta);
     if (meta && meta.toClient) {
       protocol.send({action: updateIn(['meta', 'fromServer'], true, action)});
