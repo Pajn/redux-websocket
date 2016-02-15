@@ -133,7 +133,7 @@ const syncMiddleware = ({connection, keys, skipVersion}: Settings) => store =>
           }
           return;
       }
-    }
+    },
   };
 
   maybeCheckVersion = () => {
@@ -221,14 +221,14 @@ const syncReducer = ({keys, skipVersion}: Settings) => reducer => {
         if (!state) {
           const versions = {};
           for (const key of keys) {
-            if (skipVersion.indexOf(key) === -1) {
-              versions[key] = 0;
+            if (newState[key] && (!skipVersion || skipVersion.indexOf(key) === -1)) {
+              versions[key] = 1;
             }
           }
           newState = Object.assign({}, newState, {versions});
         } else {
           for (const key of keys) {
-            if (state[key] !== newState[key] && skipVersion.indexOf(key) === -1) {
+            if (state[key] !== newState[key] && (!skipVersion || skipVersion.indexOf(key) === -1)) {
               newState = updateIn(['versions', key], (state.versions[key] || 0) + 1, newState);
             }
           }

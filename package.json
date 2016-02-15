@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "prepublish": "npm-run-all prepublish:*",
+    "prepublish:copy_base_config": "cp tsconfig.base.json tsconfig.json",
     "prepublish:typescript": "tsc",
     "prepublish:babel": "babel --out-dir lib .tmp --presets es2015",
     "watch": "npm-run-all --parallel watch:*",
