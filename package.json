@@ -1,32 +1,46 @@
 {
   "name": "redux-websocket",
-  "version": "0.2.1",
+  "version": "0.2.0",
   "description": "",
   "main": "index.js",
   "typings": "./typings.d.ts",
   "scripts": {
+    "postinstall": "npm-run-all postinstall:*",
+    "postinstall:tsdm": "tsdm rewire",
+    "postinstall:typings": "typings install",
     "prepublish": "npm-run-all prepublish:*",
     "prepublish:copy_base_config": "cp tsconfig.base.json tsconfig.json",
     "prepublish:typescript": "tsc",
     "prepublish:babel": "babel --out-dir lib .tmp --presets es2015",
     "watch": "npm-run-all --parallel watch:*",
     "watch:typescript": "tsc --watch",
-    "watch:babel": "babel --out-dir lib .tmp --presets es2015 --watch"
+    "watch:babel": "babel --out-dir lib .tmp --presets es2015 --watch",
+    "test": "cd test && tsc && mocha --recursive bin/specs",
+    "test-watch": "cd test && (tsc --watch & mocha --harmony -r babel-polyfill --watch --recursive bin/specs)"
   },
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
-    "redux-decorated": "^0.1.2",
+    "redux-decorated": "^0.1.3",
     "websocket": "^1.0.22"
   },
   "devDependencies": {
     "babel": "^6.3.26",
     "babel-cli": "^6.3.17",
     "babel-core": "^6.4.5",
+    "babel-polyfill": "^6.5.0",
     "babel-preset-es2015": "^6.3.13",
+    "babel-runtime": "^6.5.0",
+    "chai": "^3.5.0",
+    "chai-as-promised": "^5.2.0",
+    "mocha": "^2.4.5",
     "npm-run-all": "^1.4.0",
+    "redux": "^3.3.1",
+    "retyped-chai-as-promised-tsd-ambient": "0.0.0-0",
+    "retyped-promises-a-plus-tsd-ambient": "0.0.0-0",
     "tsconfig-glob": "^0.3.3",
-    "typescript": "^1.7.5"
+    "typescript": "^1.7.5",
+    "typings": "^0.6.8"
   },
   "peerDependencies": {
     "redux": "3.x"

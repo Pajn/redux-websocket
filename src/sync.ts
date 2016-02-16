@@ -5,7 +5,7 @@ const dispatchAction = 'dispatchAction';
 const checkVersion = 'checkVersion';
 
 type Settings = {
-  connection: WebSocketConnection,
+  socket: WebSocketConnection,
   keys: string[],
   skipVersion?: string[],
   waitForAction?: string,
@@ -83,7 +83,7 @@ function findChanges(newState = {}, oldState = {}, path = []) {
 
 let maybeCheckVersion;
 
-const syncMiddleware = ({connection, keys, skipVersion, waitForAction}: Settings) => store =>
+const syncMiddleware = ({socket, keys, skipVersion, waitForAction}: Settings) => store =>
     next => {
   if (waitForAction === undefined) {
     waitForAction = 'persist/COMPLETE';
@@ -149,7 +149,7 @@ const syncMiddleware = ({connection, keys, skipVersion, waitForAction}: Settings
     }
   };
 
-  connection.registerProtocol('sync', protocol);
+  socket.registerProtocol('sync', protocol);
 
   return action => {
     const oldState = store.getState();
@@ -186,9 +186,9 @@ const syncReducer = ({keys, skipVersion}: Settings) => reducer => {
     return !skipVersion || skipVersion.indexOf(key) === -1;
   }
 
-  return (state, action) => {
+  return (state = {}, action) => {
     let newState;
-    const stateVersions = state.versions || {};
+    const stateVersions = state['versions'] || {};
 
     switch (action.type) {
       case actions.initialSyncedState.type:
@@ -259,5 +259,5 @@ export const syncStoreEnhancer = (settings: Settings) => next => (reducer, initi
 };
 
 export function noopReducer(state) {
-  return state;
+  return state || {};
 }

@@ -8,6 +8,14 @@ declare module 'redux-websocket/lib/common' {
   export interface WebSocketConnection {
     registerProtocol(name: string, protocol: Protocol): void;
   }
+
+  export interface Action {
+    type: string;
+    meta?: {
+      toServer?: boolean;
+      toClient?: boolean;
+    };
+  }
 }
 
 declare module 'redux-websocket/lib/client' {
@@ -15,12 +23,15 @@ declare module 'redux-websocket/lib/client' {
 
   export class WebSocketClient implements WebSocketConnection {
     protocols: {};
-    socket: WebSocket;
+    private socket: WebSocket;
     constructor(url: any);
     registerProtocol(name: string, protocol: Protocol): void;
   }
-  export function websocketMiddleware(client: WebSocketClient):
-      (store: any) => (next: any) => (action: any) => any;
+
+  export function websocketMiddleware(settings: {
+    actions?: any,
+    socket: WebSocketClient,
+  }): (store: any) => (next: any) => (action: any) => any;
 }
 
 declare module 'redux-websocket/lib/server' {
@@ -30,9 +41,10 @@ declare module 'redux-websocket/lib/server' {
     constructor(httpServer);
     registerProtocol(name: string, protocol: Protocol): void;
   }
-  export function websocketMiddleware({server, actions}: {
-    server: WebSocketServer;
+
+  export function websocketMiddleware(settings: {
     actions: any;
+    socket: WebSocketServer;
   }): (store: any) => (next: any) => (action: any) => any;
 }
 
@@ -40,9 +52,10 @@ declare module 'redux-websocket/lib/sync' {
   import {Protocol, WebSocketConnection} from 'redux-websocket/lib/common';
 
   type Settings = {
-    connection: WebSocketConnection,
+    socket: WebSocketConnection,
     keys: string[],
     skipVersion?: string[],
+    waitForAction?: string,
   };
 
   export function syncStoreEnhancer(settings: Settings): (next) => (reducer, initialState) => any;
@@ -66,7 +79,7 @@ declare module 'redux-websocket/lib/rpc' {
   export function clientError(message: string);
 
   export interface RemoteProceduresDecorator {
-    (settings: RpcSettings): ClassDecorator;
+    (settings?: RpcSettings): ClassDecorator;
   }
 }
 

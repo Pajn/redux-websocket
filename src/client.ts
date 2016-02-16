@@ -1,68 +1,71 @@
-import {Action, Actions, Protocol, WebSocketConnection} from './common';
+import {Action, Actions, Protocol, WebSocketConnection} from './common'
 
 export class WebSocketClient implements WebSocketConnection {
-  protocols = {};
-  socket: WebSocket;
+  protocols = {}
+  socket: WebSocket
 
   constructor({url, onOpen}: {url: string, onOpen: Function}) {
-    this.connect(url, onOpen);
+    this.connect(url, onOpen)
   }
 
   registerProtocol(name: string, protocol: Protocol) {
-    protocol.send = (message) => this.socket.send(JSON.stringify({type: name, data: message}));
-    this.protocols[name] = protocol;
+    protocol.send = (message) => this.socket.send(JSON.stringify({type: name, data: message}))
+    this.protocols[name] = protocol
   }
 
   private connect(url, onOpen) {
-    this.socket = new WebSocket(url, 'redux');
+    this.socket = new WebSocket(url, 'redux-websocket')
 
     this.socket.onopen = () => {
       if (onOpen) {
-        onOpen();
+        onOpen()
       }
       Object.keys(this.protocols).forEach(protocolName => {
-        const protocol = this.protocols[protocolName];
+        const protocol = this.protocols[protocolName]
 
         if (protocol.onopen) {
-          protocol.onopen();
+          protocol.onopen()
         }
-      });
-    };
+      })
+    }
 
     this.socket.onclose = () => {
-      setTimeout(() => this.connect(url, onOpen), 1000);
-    };
+      setTimeout(() => this.connect(url, onOpen), 1000)
+    }
 
     this.socket.onmessage = event => {
-      const message = JSON.parse(event.data);
-      const protocol = this.protocols[message.type];
+      const message = JSON.parse(event.data)
+      const protocol = this.protocols[message.type]
       if (protocol) {
-        protocol.onmessage(message.data);
+        protocol.onmessage(message.data)
       }
-    };
+    }
   }
 }
 
 type Settings = {
-  actions: Actions,
-  client: WebSocketClient,
-};
+  actions?: Actions,
+  socket: WebSocketClient,
+}
 
-export const websocketMiddleware = ({client, actions}: Settings) => store => next => {
+export const websocketMiddleware = ({socket, actions}: Settings) => store => next => {
+  if (!actions) {
+    actions = {}
+  }
 
   const protocol: Protocol = {
     onmessage({action}) {
-      next(action);
+      next(action)
     }
-  };
+  }
 
-  client.registerProtocol('action', protocol);
+  socket.registerProtocol('action', protocol)
 
   return (action: Action) => {
-    const meta = action.meta || (actions[action.type] && actions[action.type].meta);
+    const meta = action.meta || (actions[action.type] && actions[action.type].meta)
     if (meta && meta.toServer) {
-      protocol.send({action});
+      protocol.send({action})
     }
-    return next(action);
-  };
-};
+    return next(action)
+  }
+}

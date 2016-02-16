@@ -1,21 +1,21 @@
 export interface Protocol {
-  onopen?: () => void;
-  onmessage: (message: any, respond: (message: Object) => void) => void;
-  send?: (message: Object) => void;
+  onopen?: () => void
+  onmessage: (message: any, respond: (message: Object) => void) => void
+  send?: (message: Object) => void
 }
 
 export interface WebSocketConnection {
-  registerProtocol(name: string, protocol: Protocol): void;
+  registerProtocol(name: string, protocol: Protocol): void
 }
 
 export interface Actions {
-  [type: string]: Action;
+  [type: string]: Action
 }
 
 export interface Action {
-  type: string;
+  type: string
   meta?: {
-    toServer?: boolean;
-    toClient?: boolean;
-  };
+    toServer?: boolean
+    toClient?: boolean
+  }
 }
