@@ -1,9 +1,9 @@
 'use strict'
+
 import {expect} from 'chai'
 import {createRpcClient} from 'redux-websocket/lib/rpc/client'
 import {createMockFunction, trackCalls} from '../../mocks/function'
 import {createMockSocket} from '../../mocks/socket'
-
 
 import chai = require('chai')
 import chaiAsPromised = require('chai-as-promised')
@@ -14,7 +14,6 @@ function respond(protocol, response?) {
     protocol.onmessage(Object.assign({id: message.id}, response || {}))
   })
 }
-
 
 describe('rpc', () => {
   describe('client', () => {

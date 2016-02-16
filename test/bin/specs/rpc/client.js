@@ -8,25 +8,20 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, Promise, generator) {
-    return new Promise(function (resolve, reject) {
-        generator = generator.call(thisArg, _arguments);
-        function cast(value) { return value instanceof Promise && value.constructor === Promise ? value : new Promise(function (resolve) { resolve(value); }); }
-        function onfulfill(value) { try { step("next", value); } catch (e) { reject(e); } }
-        function onreject(value) { try { step("throw", value); } catch (e) { reject(e); } }
-        function step(verb, value) {
-            var result = generator[verb](value);
-            result.done ? resolve(result.value) : cast(result.value).then(onfulfill, onreject);
-        }
-        step("next", void 0);
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator.throw(value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments)).next());
     });
 };
-var chai_1 = require('chai');
-var client_1 = require('redux-websocket/lib/rpc/client');
-var function_1 = require('../../mocks/function');
-var socket_1 = require('../../mocks/socket');
-var chai = require('chai');
-var chaiAsPromised = require('chai-as-promised');
+const chai_1 = require('chai');
+const client_1 = require('redux-websocket/lib/rpc/client');
+const function_1 = require('../../mocks/function');
+const socket_1 = require('../../mocks/socket');
+const chai = require('chai');
+const chaiAsPromised = require('chai-as-promised');
 chai.use(chaiAsPromised);
 function respond(protocol, response) {
     return message => setTimeout(() => {
@@ -37,13 +32,13 @@ describe('rpc', () => {
     describe('client', () => {
         it('should register a protocol id if passed', () => {
             const socket = socket_1.createMockSocket();
-            client_1.createRpcClient({ socket, id: 'test' });
+            client_1.createRpcClient({ socket: socket, id: 'test' });
             chai_1.expect(socket.protocols['rpc']).to.be.undefined;
             chai_1.expect(socket.protocols['rpctest']).to.exist;
         });
-        it('should send the correct class name, method name and arguments', () => __awaiter(this, void 0, Promise, function* () {
+        it('should send the correct class name, method name and arguments', () => __awaiter(this, void 0, void 0, function* () {
             const socket = socket_1.createMockSocket();
-            const remoteProcedures = client_1.createRpcClient({ socket }).remoteProcedures;
+            const remoteProcedures = client_1.createRpcClient({ socket: socket }).remoteProcedures;
             const protocol = socket.protocols['rpc'];
             const sendMock = protocol.send = function_1.trackCalls(respond(protocol));
             // TODO: TS doesn't seem to compile to a class with name ??
@@ -64,9 +59,9 @@ describe('rpc', () => {
                     args: [1, 2, 3],
                 }]);
         }));
-        it('should respond with the value of the RPC', () => __awaiter(this, void 0, Promise, function* () {
+        it('should respond with the value of the RPC', () => __awaiter(this, void 0, void 0, function* () {
             const socket = socket_1.createMockSocket();
-            const remoteProcedures = client_1.createRpcClient({ socket }).remoteProcedures;
+            const remoteProcedures = client_1.createRpcClient({ socket: socket }).remoteProcedures;
             const respondMock = function_1.createMockFunction();
             const protocol = socket.protocols['rpc'];
             const sendMock = protocol.send = function_1.trackCalls(respond(protocol, { value: 'server' }));
@@ -81,9 +76,9 @@ describe('rpc', () => {
             const object = new Class();
             return chai_1.expect(object.method()).to.eventually.become('server');
         }));
-        it('should reject with the error of the RPC', () => __awaiter(this, void 0, Promise, function* () {
+        it('should reject with the error of the RPC', () => __awaiter(this, void 0, void 0, function* () {
             const socket = socket_1.createMockSocket();
-            const remoteProcedures = client_1.createRpcClient({ socket }).remoteProcedures;
+            const remoteProcedures = client_1.createRpcClient({ socket: socket }).remoteProcedures;
             const respondMock = function_1.createMockFunction();
             const protocol = socket.protocols['rpc'];
             const sendMock = protocol.send = function_1.trackCalls(respond(protocol, { error: 'server' }));
@@ -98,9 +93,9 @@ describe('rpc', () => {
             const object = new Class();
             return chai_1.expect(object.method()).to.eventually.be.rejectedWith('server');
         }));
-        it('should timout if no response is given', () => __awaiter(this, void 0, Promise, function* () {
+        it('should timout if no response is given', () => __awaiter(this, void 0, void 0, function* () {
             const socket = socket_1.createMockSocket();
-            const remoteProcedures = client_1.createRpcClient({ socket }).remoteProcedures;
+            const remoteProcedures = client_1.createRpcClient({ socket: socket }).remoteProcedures;
             const respondMock = function_1.createMockFunction();
             const protocol = socket.protocols['rpc'];
             const sendMock = protocol.send = function_1.createMockFunction();

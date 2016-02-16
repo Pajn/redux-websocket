@@ -36,9 +36,10 @@ declare module 'redux-websocket/lib/client' {
 
 declare module 'redux-websocket/lib/server' {
   import {Protocol, WebSocketConnection} from 'redux-websocket/lib/common';
+  import {server as WebSocket} from 'websocket';
 
   export class WebSocketServer implements WebSocketConnection {
-    constructor(httpServer);
+    constructor(webSocket: WebSocket);
     registerProtocol(name: string, protocol: Protocol): void;
   }
 

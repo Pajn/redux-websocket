@@ -8,34 +8,29 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, Promise, generator) {
-    return new Promise(function (resolve, reject) {
-        generator = generator.call(thisArg, _arguments);
-        function cast(value) { return value instanceof Promise && value.constructor === Promise ? value : new Promise(function (resolve) { resolve(value); }); }
-        function onfulfill(value) { try { step("next", value); } catch (e) { reject(e); } }
-        function onreject(value) { try { step("throw", value); } catch (e) { reject(e); } }
-        function step(verb, value) {
-            var result = generator[verb](value);
-            result.done ? resolve(result.value) : cast(result.value).then(onfulfill, onreject);
-        }
-        step("next", void 0);
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator.throw(value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments)).next());
     });
 };
-var chai_1 = require('chai');
-var server_1 = require('redux-websocket/lib/rpc/server');
-var function_1 = require('../../mocks/function');
-var socket_1 = require('../../mocks/socket');
+const chai_1 = require('chai');
+const server_1 = require('redux-websocket/lib/rpc/server');
+const function_1 = require('../../mocks/function');
+const socket_1 = require('../../mocks/socket');
 describe('rpc', () => {
     describe('server', () => {
         it('should register a protocol id if passed', () => {
             const socket = socket_1.createMockSocket();
-            server_1.createRpcServer({ socket, id: 'test' });
+            server_1.createRpcServer({ socket: socket, id: 'test' });
             chai_1.expect(socket.protocols['rpc']).to.be.undefined;
             chai_1.expect(socket.protocols['rpctest']).to.exist;
         });
-        it('should respond with an error if the class is missing', () => __awaiter(this, void 0, Promise, function* () {
+        it('should respond with an error if the class is missing', () => __awaiter(this, void 0, void 0, function* () {
             const socket = socket_1.createMockSocket();
-            server_1.createRpcServer({ socket });
+            server_1.createRpcServer({ socket: socket });
             const respondMock = function_1.createMockFunction();
             yield socket.protocols['rpc'].onmessage({
                 id: 1,
@@ -49,9 +44,9 @@ describe('rpc', () => {
                     error: 'no such class',
                 }]);
         }));
-        it('should respond with an error if the method is missing', () => __awaiter(this, void 0, Promise, function* () {
+        it('should respond with an error if the method is missing', () => __awaiter(this, void 0, void 0, function* () {
             const socket = socket_1.createMockSocket();
-            const remoteProcedures = server_1.createRpcServer({ socket }).remoteProcedures;
+            const remoteProcedures = server_1.createRpcServer({ socket: socket }).remoteProcedures;
             const respondMock = function_1.createMockFunction();
             // TODO: TS doesn't seem to compile to a class with name ??
             let Class = class {
@@ -72,9 +67,9 @@ describe('rpc', () => {
                     error: 'no such method',
                 }]);
         }));
-        it('should respond with the value of the method', () => __awaiter(this, void 0, Promise, function* () {
+        it('should respond with the value of the method', () => __awaiter(this, void 0, void 0, function* () {
             const socket = socket_1.createMockSocket();
-            const remoteProcedures = server_1.createRpcServer({ socket }).remoteProcedures;
+            const remoteProcedures = server_1.createRpcServer({ socket: socket }).remoteProcedures;
             const respondMock = function_1.createMockFunction();
             // TODO: TS doesn't seem to compile to a class with name ??
             let Class = class {
@@ -98,9 +93,9 @@ describe('rpc', () => {
                     value: 'returnValue',
                 }]);
         }));
-        it('should respond with unkown error when the method thows', () => __awaiter(this, void 0, Promise, function* () {
+        it('should respond with unkown error when the method thows', () => __awaiter(this, void 0, void 0, function* () {
             const socket = socket_1.createMockSocket();
-            const remoteProcedures = server_1.createRpcServer({ socket }).remoteProcedures;
+            const remoteProcedures = server_1.createRpcServer({ socket: socket }).remoteProcedures;
             const respondMock = function_1.createMockFunction();
             // TODO: TS doesn't seem to compile to a class with name ??
             let Class = class {
@@ -124,9 +119,9 @@ describe('rpc', () => {
                     error: 'Unkown Error',
                 }]);
         }));
-        it('should respond with the client error thrown by the method', () => __awaiter(this, void 0, Promise, function* () {
+        it('should respond with the client error thrown by the method', () => __awaiter(this, void 0, void 0, function* () {
             const socket = socket_1.createMockSocket();
-            const remoteProcedures = server_1.createRpcServer({ socket }).remoteProcedures;
+            const remoteProcedures = server_1.createRpcServer({ socket: socket }).remoteProcedures;
             const respondMock = function_1.createMockFunction();
             // TODO: TS doesn't seem to compile to a class with name ??
             let Class = class {
@@ -150,9 +145,9 @@ describe('rpc', () => {
                     error: 'other error',
                 }]);
         }));
-        it('should call the method with provided args', () => __awaiter(this, void 0, Promise, function* () {
+        it('should call the method with provided args', () => __awaiter(this, void 0, void 0, function* () {
             const socket = socket_1.createMockSocket();
-            const remoteProcedures = server_1.createRpcServer({ socket }).remoteProcedures;
+            const remoteProcedures = server_1.createRpcServer({ socket: socket }).remoteProcedures;
             const respondMock = function_1.createMockFunction();
             const method = function_1.createMockFunction();
             // TODO: TS doesn't seem to compile to a class with name ??

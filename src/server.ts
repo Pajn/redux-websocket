@@ -1,4 +1,3 @@
-import {Server as HttpServer} from 'http'
 import {updateIn} from 'redux-decorated'
 import {server as WebSocket, connection} from 'websocket'
 import {Action, Actions, Protocol, WebSocketConnection} from './common'
@@ -7,16 +6,12 @@ export class WebSocketServer implements WebSocketConnection {
   connections: Array<connection> = []
   protocols = {}
 
-  constructor(httpServer: HttpServer) {
-    const server = new WebSocket()
-
-    server.mount({httpServer})
-
-    server.on('request', (request) => {
+  constructor(server: WebSocket) {
+    server.on('request', request => {
       const connection = request.accept('redux-websocket', request.origin)
       this.connections.push(connection)
 
-      connection.on('message', (message) => {
+      connection.on('message', message => {
         try {
           if (message.type === 'utf8') {
             const data = JSON.parse(message.utf8Data)
