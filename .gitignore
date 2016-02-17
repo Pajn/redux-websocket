@@ -2,6 +2,7 @@
 dist/
 lib/
 node_modules/
+test/bin/
 typings/**/*
 tsconfig.json
 npm-debug.log

@@ -8,6 +8,7 @@ interface TrackingFunction {
 interface MockFunction extends TrackingFunction {
   returns(returnValue): this
   returns(args: any[], returnValue): this
+  returns(callTime: number, returnValue): this
 }
 
 /**
@@ -35,13 +36,19 @@ export function trackCalls(fn) {
 
 export function createMockFunction() {
   let defaultReturnValue
+  let calls = 0
   const returnValues = []
 
   const mock = trackCalls(() => {
     const toReturn = returnValues.find(returnValue =>
-      arguments.length === returnValue.args.length &&
-      returnValue.args.every((arg, index) => arg === arguments[index])
+      calls === returnValue.calls || (
+        returnValue.args &&
+        arguments.length === returnValue.args.length &&
+        returnValue.args.every((arg, index) => arg === arguments[index])
+      )
     ) || defaultReturnValue
+
+    calls++
 
     return toReturn && toReturn.returnValue
   }) as MockFunction
@@ -49,9 +56,14 @@ export function createMockFunction() {
   mock.returns = function (args, returnValue) {
     if (arguments.length === 1) {
       defaultReturnValue = {returnValue: args}
-    } else {
+    } else if (Array.isArray(args)) {
       returnValues.push({
         args: args,
+        returnValue: returnValue,
+      })
+    } else if (typeof args === 'number') {
+      returnValues.push({
+        calls: args,
         returnValue: returnValue,
       })
     }
