@@ -15,7 +15,7 @@ export const syncReducer = ({keys, skipVersion}: Settings, protocol: SyncProtoco
         const {state: initialState, versions} = action.payload as InitialSyncPayload
 
         return Object.assign({}, oldState, initialState, {
-          versions: Object.assign({}, oldState['versions'], versions),
+          versions: Object.assign({}, oldState['versions'], versions)
         })
 
       case actions.updateSyncedState.type:

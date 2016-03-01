@@ -30,7 +30,7 @@
     "no-debugger": true,
     "no-duplicate-key": true,
     "no-duplicate-variable": true,
-    "no-empty": true,
+    "no-empty": false,
     "no-eval": true,
     "no-string-literal": false,
     "no-switch-case-fall-through": true,
@@ -48,7 +48,7 @@
     ],
     "quotemark": [true, "single", "avoid-escape"],
     "radix": true,
-    "semicolon": true,
+    "semicolon": [true, "never"],
     "triple-equals": [true, "allow-null-check"],
     "typedef-whitespace": [true, {
       "call-signature": "nospace",

@@ -8,8 +8,8 @@ type RpcServerSettings = {
    * Optional id to use when handling multiple RPC servers on a single WebSocketServer.
    * The same id must be specified on the client.
    */
-  id?: string|number,
-  socket: WebSocketServer,
+  id?: string|number
+  socket: WebSocketServer
   logger?: {
     info(message?: any, ...optionalParams: any[]): void
     warn(message?: any, ...optionalParams: any[]): void
@@ -40,7 +40,7 @@ export function createRpcServer({socket, id, logger}: RpcServerSettings): RpcSer
         error = (error && error.clientError) || 'Unkown Error'
         respond({id, error})
       }
-    }
+    },
   }
 
   socket.registerProtocol(`rpc${id || ''}`, webSocketProtocol)

@@ -3,7 +3,7 @@
 import {expect} from 'chai'
 import {actions, dispatchAction} from 'redux-websocket/lib/_sync/constants'
 import {diffingMiddleware, trackRehydrationMiddleware} from 'redux-websocket/lib/_sync/middlewares'
-import {createMockFunction} from '../../mocks/function'
+import {createMockFunction} from 'mock-functions'
 
 describe('sync/middlewares', () => {
   describe('diffingMiddleware', () => {
@@ -55,7 +55,7 @@ describe('sync/middlewares', () => {
               value: 'new',
             }],
             key: 'prop',
-            version: 2
+            version: 2,
           }],
         },
       }])
@@ -90,7 +90,7 @@ describe('sync/middlewares', () => {
         setRehydrationCompleted: createMockFunction(),
         maybeCheckVersion: createMockFunction(),
       }
-      const dispatch = trackRehydrationMiddleware({waitForAction: null}, protocol)(null)(null)
+      trackRehydrationMiddleware({waitForAction: null}, protocol)(null)(null)
 
       expect(protocol.setRehydrationCompleted.calls.length).to.equal(1)
       expect(protocol.maybeCheckVersion.calls.length).to.equal(1)

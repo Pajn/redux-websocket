@@ -4,9 +4,9 @@ import {expect} from 'chai'
 import {
   findChanges,
   findVersionedChanges,
-  applyChanges
+  applyChanges,
 } from 'redux-websocket/lib/_sync/find-changes'
-import {createMockFunction} from '../../mocks/function'
+import {createMockFunction} from 'mock-functions'
 import {createMockSocket} from '../../mocks/socket'
 
 

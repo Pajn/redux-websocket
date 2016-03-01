@@ -1,7 +1,11 @@
 import {actions, checkVersion, dispatchAction, SyncProtocol} from './constants'
 import {getNewVersions} from './get-new-versions'
 
-type CheckVersionFunction = (getState: () => any, clientVersions, respond: (message) => void) => void
+type CheckVersionFunction = (
+  getState: () => any,
+  clientVersions,
+  respond: (message) => void
+) => void
 
 export function checkVersionFunction(skipVersion: string[]): CheckVersionFunction {
   return (getState, clientVersions, respond) => {

@@ -3,7 +3,7 @@
 import {expect} from 'chai'
 import {actions, checkVersion, dispatchAction} from 'redux-websocket/lib/_sync/constants'
 import {checkVersionFunction, createProtocol} from 'redux-websocket/lib/_sync/protocol'
-import {createMockFunction} from '../../mocks/function'
+import {createMockFunction} from 'mock-functions'
 
 describe('sync/protocol', () => {
   describe('checkVersionFunction', () => {
@@ -102,7 +102,7 @@ describe('sync/protocol', () => {
         expect(protocol.send.calls.length).to.equal(1)
         expect(protocol.send.calls[0].args).to.deep.equal([{
           type: checkVersion,
-          payload: {versions: {key: 1}}
+          payload: {versions: {key: 1}},
         }])
       })
     })

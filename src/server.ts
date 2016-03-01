@@ -60,7 +60,7 @@ export const websocketMiddleware = ({socket, actions}: Settings) => store => nex
           next(action)
         }
       }
-    }
+    },
   }
 
   socket.registerProtocol('action', protocol)

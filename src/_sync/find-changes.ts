@@ -1,15 +1,15 @@
 import {removeIn, updateIn} from 'redux-decorated'
 
 type Changes = Array<{
-  path: string[],
-  value?: any,
-  removed?: boolean,
+  path: string[]
+  value?: any
+  removed?: boolean
 }>
 
 type VersionedChanges = Array<{
-  key: string,
-  changes: Changes,
-  version: number,
+  key: string
+  changes: Changes
+  version: number
 }>
 
 export function findChanges(newState = {}, oldState = {}, path = []): Changes {

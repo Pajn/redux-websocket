@@ -1,6 +1,6 @@
 import {expect} from 'chai'
 import {WebSocketServer, websocketMiddleware} from 'redux-websocket/lib/server'
-import {createMockFunction} from '../mocks/function'
+import {createMockFunction} from 'mock-functions'
 import {createMockSocket} from '../mocks/socket'
 
 function on(event, fn) {
@@ -89,7 +89,7 @@ describe('WebSocketServer', () => {
     expect(connection.send.calls.length).to.equal(1)
     expect(connection.send.calls[0].args).to.deep.equal([JSON.stringify({
       type: 'test',
-      data: 'message2'
+      data: 'message2',
     })])
   })
 })

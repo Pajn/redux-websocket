@@ -1,22 +1,22 @@
 'use strict'
 
 import {expect} from 'chai'
-import {actions, InitialSyncPayload} from 'redux-websocket/lib/_sync/constants'
+import {actions} from 'redux-websocket/lib/_sync/constants'
 import {syncReducer} from 'redux-websocket/lib/_sync/reducer'
-import {createMockFunction, trackCalls} from '../../mocks/function'
+import {createMockFunction, trackCalls} from 'mock-functions'
 
 describe('sync/syncReducer', () => {
   describe('action: initialSyncedState', () => {
     it('should apply state and versions from the server', () => {
       const reducer = syncReducer({
         keys: ['old', 'current', 'new', 'skip'],
-        skipVersion: ['skip']
+        skipVersion: ['skip'],
       }, null, null)
 
       const result = reducer({
         old: 1,
         current: 1,
-        versions: {old: 1, current: 2}
+        versions: {old: 1, current: 2},
       }, {
         type: actions.initialSyncedState.type,
         payload: {
@@ -32,8 +32,8 @@ describe('sync/syncReducer', () => {
             new: 1,
             // ignored: 1,
             // skip: 1,
-          }
-        }
+          },
+        },
       })
 
       expect(result).to.deep.equal({
@@ -53,7 +53,7 @@ describe('sync/syncReducer', () => {
         old: 1,
         current: 1,
         ignored: 1,
-        versions: {old: 1, current: 2}
+        versions: {old: 1, current: 2},
       }, {
         type: actions.updateSyncedState.type,
         payload: [
@@ -67,7 +67,7 @@ describe('sync/syncReducer', () => {
             version: 1,
             changes: [{path: [], value: 2}],
           },
-        ]
+        ],
       })
 
       expect(result).to.deep.equal({
@@ -90,7 +90,7 @@ describe('sync/syncReducer', () => {
             key: 'old',
             version: 3,
             changes: [{path: [], value: 2}],
-          }]
+          }],
         }
       )
 

@@ -44,8 +44,8 @@ export class WebSocketClient implements WebSocketConnection {
 }
 
 type Settings = {
-  actions?: Actions,
-  socket: WebSocketClient,
+  actions?: Actions
+  socket: WebSocketClient
 }
 
 export const websocketMiddleware = ({socket, actions}: Settings) => store => next => {
@@ -56,7 +56,7 @@ export const websocketMiddleware = ({socket, actions}: Settings) => store => nex
   const protocol: Protocol = {
     onmessage({action}) {
       next(action)
-    }
+    },
   }
 
   socket.registerProtocol('action', protocol)

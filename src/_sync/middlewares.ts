@@ -4,7 +4,7 @@ import {findVersionedChanges} from './find-changes'
 export const diffingMiddleware = ({keys, skipVersion}: Settings, protocol: SyncProtocol) =>
     store => next => action => {
   const oldState = store.getState()
-  next(action)
+  const returnValue = next(action)
   const newState = store.getState()
 
   const updates = findVersionedChanges(newState, oldState, keys)
@@ -15,6 +15,8 @@ export const diffingMiddleware = ({keys, skipVersion}: Settings, protocol: SyncP
       payload: Object.assign({payload: updates}, actions.updateSyncedState),
     })
   }
+
+  return returnValue
 }
 
 export const trackRehydrationMiddleware = ({waitForAction}: Settings, protocol: SyncProtocol) =>
@@ -34,6 +36,6 @@ export const trackRehydrationMiddleware = ({waitForAction}: Settings, protocol: 
       protocol.maybeCheckVersion()
     }
 
-    next(action)
+    return next(action)
   }
 }

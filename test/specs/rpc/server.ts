@@ -2,7 +2,7 @@
 
 import {expect} from 'chai'
 import {clientError, createRpcServer} from 'redux-websocket/lib/rpc/server'
-import {createMockFunction} from '../../mocks/function'
+import {createMockFunction} from 'mock-functions'
 import {createMockSocket} from '../../mocks/socket'
 
 describe('rpc', () => {

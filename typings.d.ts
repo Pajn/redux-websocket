@@ -9,6 +9,8 @@ declare module 'redux-websocket/lib/common' {
     registerProtocol(name: string, protocol: Protocol): void;
   }
 
+  export type Actions  = {[type: string]: Action}// | {}
+
   export interface Action {
     type: string;
     meta?: {
@@ -19,7 +21,7 @@ declare module 'redux-websocket/lib/common' {
 }
 
 declare module 'redux-websocket/lib/client' {
-  import {Protocol, WebSocketConnection} from 'redux-websocket/lib/common';
+  import {Actions, Protocol, WebSocketConnection} from 'redux-websocket/lib/common';
 
   export class WebSocketClient implements WebSocketConnection {
     protocols: {};
@@ -29,13 +31,13 @@ declare module 'redux-websocket/lib/client' {
   }
 
   export function websocketMiddleware(settings: {
-    actions?: any,
+    actions?: Actions,
     socket: WebSocketClient,
   }): (store: any) => (next: any) => (action: any) => any;
 }
 
 declare module 'redux-websocket/lib/server' {
-  import {Protocol, WebSocketConnection} from 'redux-websocket/lib/common';
+  import {Actions, Protocol, WebSocketConnection} from 'redux-websocket/lib/common';
   import {server as WebSocket} from 'websocket';
 
   export class WebSocketServer implements WebSocketConnection {
@@ -44,7 +46,7 @@ declare module 'redux-websocket/lib/server' {
   }
 
   export function websocketMiddleware(settings: {
-    actions: any;
+    actions: Actions;
     socket: WebSocketServer;
   }): (store: any) => (next: any) => (action: any) => any;
 }

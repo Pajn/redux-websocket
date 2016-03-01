@@ -21,7 +21,7 @@ describe('WebSocketClient', () => {
   })
 
   it('should connect to the passed url', () => {
-    const socket = new WebSocketClient({url: 'ws://test'})
+  new WebSocketClient({url: 'ws://test'})
 
     expect(socketMock.url).to.equal('ws://test')
     expect(socketMock.protocol).to.equal('redux-websocket')
@@ -29,7 +29,7 @@ describe('WebSocketClient', () => {
 
   it('should call onOpen if provided', () => {
     const onOpen = createMockFunction()
-    const socket = new WebSocketClient({url: 'ws://test', onOpen})
+    new WebSocketClient({url: 'ws://test', onOpen})
 
     socketMock.onopen()
 
@@ -84,7 +84,7 @@ describe('WebSocketClient', () => {
     })
 
     it('should reconnect when the connection is lost', done => {
-      const socket = new WebSocketClient({url: 'ws://test'})
+      new WebSocketClient({url: 'ws://test'})
       const oldSocketMock = socketMock;
 
       socketMock.onclose()

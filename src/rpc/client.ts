@@ -6,8 +6,8 @@ type RpcClientSettings = {
   /**
    * Optional id to use for connecting to an RPC server with a non-empty id
    */
-  id?: string|number,
-  socket: WebSocketClient,
+  id?: string|number
+  socket: WebSocketClient
 }
 
 type RpcClient = {
@@ -22,9 +22,9 @@ export function createRpcClient({socket, id}: RpcClientSettings): RpcClient {
     onmessage({id, error, value}) {
       const call = waitingCalls[id]
       if (call) {
-        call(error, value)
+        call(error, value);
       }
-    }
+    },
   }
 
   socket.registerProtocol(`rpc${id || ''}`, webSocketProtocol)
@@ -43,6 +43,7 @@ export function createRpcClient({socket, id}: RpcClientSettings): RpcClient {
       methods.forEach(methodName => {
         Class.prototype[methodName] = (...args) => {
           const callId = nextCallId++
+
           webSocketProtocol.send({
             id: callId,
             className,

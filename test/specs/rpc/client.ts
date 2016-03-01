@@ -2,7 +2,7 @@
 
 import {expect} from 'chai'
 import {createRpcClient} from 'redux-websocket/lib/rpc/client'
-import {createMockFunction, trackCalls} from '../../mocks/function'
+import {createMockFunction, trackCalls} from 'mock-functions'
 import {createMockSocket} from '../../mocks/socket'
 
 import chai = require('chai')
@@ -54,9 +54,8 @@ describe('rpc', () => {
     it('should respond with the value of the RPC', async () => {
       const socket = createMockSocket()
       const remoteProcedures = createRpcClient({socket}).remoteProcedures
-      const respondMock = createMockFunction()
       const protocol = socket.protocols['rpc']
-      const sendMock = protocol.send = trackCalls(respond(protocol, {value: 'server'}))
+      protocol.send = trackCalls(respond(protocol, {value: 'server'}))
 
       // TODO: TS doesn't seem to compile to a class with name ??
       @remoteProcedures({name: 'Class'})
@@ -72,9 +71,8 @@ describe('rpc', () => {
     it('should reject with the error of the RPC', async () => {
       const socket = createMockSocket()
       const remoteProcedures = createRpcClient({socket}).remoteProcedures
-      const respondMock = createMockFunction()
       const protocol = socket.protocols['rpc']
-      const sendMock = protocol.send = trackCalls(respond(protocol, {error: 'server'}))
+      protocol.send = trackCalls(respond(protocol, {error: 'server'}))
 
       // TODO: TS doesn't seem to compile to a class with name ??
       @remoteProcedures({name: 'Class'})
@@ -90,9 +88,8 @@ describe('rpc', () => {
     it('should timout if no response is given', async () => {
       const socket = createMockSocket()
       const remoteProcedures = createRpcClient({socket}).remoteProcedures
-      const respondMock = createMockFunction()
       const protocol = socket.protocols['rpc']
-      const sendMock = protocol.send = createMockFunction()
+      protocol.send = createMockFunction()
 
       // TODO: TS doesn't seem to compile to a class with name ??
       @remoteProcedures({name: 'Class', timeout: 1})
