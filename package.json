@@ -6,7 +6,8 @@
   "scripts": {
     "configure": "npm-run-all configure:*",
     "configure:tsdm": "tsdm rewire",
-    "configure:mkdir": "mkdir -p test/node_modules",
+    "configure:mkdir-tmp": "mkdir -p .tmp",
+    "configure:mkdir-test": "mkdir -p test/node_modules",
     "configure:clean": "rm -f test/node_modules/redux-websocket",
     "configure:link-tests": "ln -s ../.. test/node_modules/redux-websocket",
     "prepublish": "npm-run-all prepublish:*",
