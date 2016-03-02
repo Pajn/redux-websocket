@@ -13,6 +13,7 @@
     "prepublish": "npm-run-all prepublish:*",
     "prepublish:configure": "npm run configure",
     "prepublish:copy-base-config": "cp tsconfig.base.json tsconfig.json",
+    "prepublish:copy-test-base-config": "cp test/tsconfig.base.json test/tsconfig.json",
     "prepublish:typescript": "tsc",
     "prepublish:babel": "babel --out-dir lib .tmp --presets es2015",
     "watch": "npm-run-all --parallel watch:*",
