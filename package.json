@@ -1,6 +1,6 @@
 {
   "name": "redux-websocket",
-  "version": "0.2.0",
+  "version": "0.2.0-dev.2",
   "description": "Aid for fullstack Redux applications",
   "main": "index.js",
   "scripts": {
@@ -11,25 +11,25 @@
     "configure:clean": "rm -f test/node_modules/redux-websocket",
     "configure:link-tests": "ln -s ../.. test/node_modules/redux-websocket",
     "prepublish": "npm-run-all prepublish:*",
+    "prepublish:configure": "npm run configure",
     "prepublish:copy-base-config": "cp tsconfig.base.json tsconfig.json",
     "prepublish:typescript": "tsc",
     "prepublish:babel": "babel --out-dir lib .tmp --presets es2015",
     "watch": "npm-run-all --parallel watch:*",
     "watch:typescript": "tsc --watch",
     "watch:babel": "babel --out-dir lib .tmp --presets es2015 --watch",
-    "test": "cd test && tsc && mocha --recursive bin/specs",
+    "test": "cd test && tsc && mocha --harmony -r babel-polyfill --recursive bin/specs",
     "test-watch": "cd test && (tsc --watch & mocha --harmony -r babel-polyfill --watch --recursive bin/specs)"
   },
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
-    "redux-decorated": "^0.1.3"
+    "redux-decorated": "^0.2.0-dev.1"
   },
   "peerDependencies": {
     "redux": "3.x"
   },
   "devDependencies": {
-    "babel": "^6.3.26",
     "babel-cli": "^6.3.17",
     "babel-core": "^6.4.5",
     "babel-polyfill": "^6.5.0",
@@ -41,12 +41,17 @@
     "mock-functions": "^0.1.1",
     "npm-run-all": "^1.4.0",
     "redux": "^3.3.1",
-    "retyped-chai-as-promised-tsd-ambient": "0.0.0-0",
-    "retyped-promises-a-plus-tsd-ambient": "0.0.0-0",
+    "retyped-chai-as-promised-tsd-ambient": "^0.0.0-1",
+    "retyped-chai-tsd-ambient": "^3.4.0-0",
+    "retyped-mocha-tsd-ambient": "^2.2.5-0",
+    "retyped-node-tsd-ambient": "^1.5.3-0",
+    "retyped-promises-a-plus-tsd-ambient": "^0.0.0-0",
+    "retyped-redux-tsd-ambient": "^1.0.0-0",
+    "retyped-websocket-tsd-ambient": "^0.0.0-0",
     "tsconfig-glob": "^0.3.3",
     "tsdm": "0.1.0-3",
     "tslint": "^3.3.0",
-    "typescript": "^1.8.0",
+    "typescript": "^1.8.7",
     "typings": "^0.6.8"
   },
   "typescript": {

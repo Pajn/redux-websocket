@@ -21,10 +21,6 @@ export const diffingMiddleware = ({keys, skipVersion}: Settings, protocol: SyncP
 
 export const trackRehydrationMiddleware = ({waitForAction}: Settings, protocol: SyncProtocol) =>
     store => next => {
-  if (waitForAction === undefined) {
-    waitForAction = 'persist/COMPLETE'
-  }
-
   if (!waitForAction) {
     protocol.setRehydrationCompleted()
     protocol.maybeCheckVersion()

@@ -25,6 +25,7 @@ export function createProtocol(
     getState: () => any,
     dispatch: (action) => void
 ) {
+  let rehydrationCompleted = false
   let webSocketOpened = false
 
   const protocol: SyncProtocol = {
@@ -48,11 +49,11 @@ export function createProtocol(
     },
 
     setRehydrationCompleted() {
-      this.rehydrationCompleted = true
+      rehydrationCompleted = true
     },
 
     maybeCheckVersion() {
-      if (webSocketOpened && this.rehydrationCompleted) {
+      if (webSocketOpened && rehydrationCompleted) {
         this.send({type: checkVersion, payload: {versions: getState().versions}})
       }
     },

@@ -103,6 +103,17 @@ describe('sync/syncReducer', () => {
   })
 
   describe('other actions', () => {
+    it('should pass through an undefined state to the reducer', () => {
+      const reducerMock = trackCalls(() => ({}))
+      const reducer = syncReducer({keys: []}, null, reducerMock)
+
+      const result = reducer(undefined, {})
+
+      expect(reducerMock.calls.length).to.equal(1)
+      expect(reducerMock.calls[0].args[0]).to.equal(undefined)
+      expect(result).to.deep.equal({})
+    })
+
     it('should pass through to the passed reducer', () => {
       const reducerMock = trackCalls(() => ({prop: 2}))
       const reducer = syncReducer({keys: []}, null, reducerMock)

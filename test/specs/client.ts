@@ -1,6 +1,6 @@
 import {expect} from 'chai'
 import {WebSocketClient, websocketMiddleware} from 'redux-websocket/lib/client'
-import {createMockFunction} from '../mocks/function'
+import {createMockFunction} from 'mock-functions'
 import {createMockSocket} from '../mocks/socket'
 
 describe('WebSocketClient', () => {

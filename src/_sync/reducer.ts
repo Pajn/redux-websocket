@@ -7,7 +7,8 @@ export const syncReducer = ({keys, skipVersion}: Settings, protocol: SyncProtoco
     return !skipVersion || skipVersion.indexOf(key) === -1
   }
 
-  return (oldState = {}, action) => {
+  return (actualState, action) => {
+    const oldState = actualState || {}
     const stateVersions = oldState['versions'] || {}
 
     switch (action.type) {
@@ -28,7 +29,7 @@ export const syncReducer = ({keys, skipVersion}: Settings, protocol: SyncProtoco
         return state
 
       default:
-        let newState = reducer(oldState, action)
+        let newState = reducer(actualState, action)
 
         for (const key of keys) {
           if (oldState[key] !== newState[key] && maintainVersion(key)) {

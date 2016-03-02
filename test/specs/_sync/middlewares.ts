@@ -76,8 +76,12 @@ describe('sync/middlewares', () => {
   describe('trackRehydrationMiddleware', () => {
     it('should pass through dispatched actions', () => {
       const dispatchMock = createMockFunction()
+      const protocol = {
+        setRehydrationCompleted: createMockFunction(),
+        maybeCheckVersion: createMockFunction(),
+      }
       const store = {getState: createMockFunction()}
-      const dispatch = trackRehydrationMiddleware({}, null)(store)(dispatchMock)
+      const dispatch = trackRehydrationMiddleware({}, protocol)(store)(dispatchMock)
 
       dispatch({type: 'dispatched'})
 

@@ -3,6 +3,7 @@ import {Action, Actions, Protocol, WebSocketConnection} from './common'
 export class WebSocketClient implements WebSocketConnection {
   protocols = {}
   socket: WebSocket
+  open = false
 
   constructor({url, onOpen}: {url: string, onOpen: Function}) {
     this.connect(url, onOpen)
@@ -11,12 +12,17 @@ export class WebSocketClient implements WebSocketConnection {
   registerProtocol(name: string, protocol: Protocol) {
     protocol.send = (message) => this.socket.send(JSON.stringify({type: name, data: message}))
     this.protocols[name] = protocol
+
+    if (this.open && protocol.onopen) {
+      protocol.onopen()
+    }
   }
 
   private connect(url, onOpen) {
     this.socket = new WebSocket(url, 'redux-websocket')
 
     this.socket.onopen = () => {
+      this.open = true
       if (onOpen) {
         onOpen()
       }

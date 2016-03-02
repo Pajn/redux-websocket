@@ -9,10 +9,9 @@ declare module 'redux-websocket/lib/common' {
     registerProtocol(name: string, protocol: Protocol): void;
   }
 
-  export type Actions  = {[type: string]: Action}// | {}
+  export type Actions  = {[type: string]: Action}
 
   export interface Action {
-    type: string;
     meta?: {
       toServer?: boolean;
       toClient?: boolean;
