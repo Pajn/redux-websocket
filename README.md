@@ -1,4 +1,6 @@
 #redux-websocket
+[![Build Status](https://travis-ci.org/Pajn/redux-websocket.svg?branch=master)](https://travis-ci.org/Pajn/redux-websocket)
+
 This module provides communication over a WebSocket between the server and clients in a
 fullstack Redux application.
 
