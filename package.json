@@ -54,7 +54,7 @@
     "tsconfig-glob": "^0.3.3",
     "tsdm": "0.1.0-3",
     "tslint": "^3.3.0",
-    "typescript": "^1.8.7"
+    "typescript": "^1.9.0-dev.20160305"
   },
   "typescript": {
     "definition": "typings.d.ts"
