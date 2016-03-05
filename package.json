@@ -19,8 +19,8 @@
     "watch": "npm-run-all --parallel watch:*",
     "watch:typescript": "tsc --watch",
     "watch:babel": "babel --out-dir lib .tmp --presets es2015 --watch",
-    "test": "cd test && tsc && mocha --harmony -r babel-polyfill --recursive bin/specs",
-    "test-watch": "cd test && (tsc --watch & mocha --harmony -r babel-polyfill --watch --recursive bin/specs)"
+    "test": "tsc -p test && mocha --harmony -r babel-polyfill --recursive test/bin/specs",
+    "test-watch": "tsc -p test --watch & mocha --harmony -r babel-polyfill --watch --recursive test/bin/specs"
   },
   "author": "",
   "license": "Apache-2.0",
