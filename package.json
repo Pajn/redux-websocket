@@ -14,6 +14,8 @@
     "prepublish:configure": "npm run configure",
     "prepublish:copy-base-config": "cp tsconfig.base.json tsconfig.json",
     "prepublish:copy-test-base-config": "cp test/tsconfig.base.json test/tsconfig.json",
+    "prepublish:tsconfig": "tsconfig -i 2",
+    "prepublish:test-tsconfig": "cd test; tsconfig -i 2",
     "prepublish:typescript": "tsc",
     "prepublish:babel": "babel --out-dir lib .tmp --presets es2015",
     "watch": "npm-run-all --parallel watch:*",
@@ -25,7 +27,7 @@
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
-    "redux-decorated": "^0.2.0-dev.1"
+    "redux-decorated": "^0.2.0-dev.3"
   },
   "peerDependencies": {
     "redux": "3.x"
