@@ -39,7 +39,7 @@ declare module 'redux-websocket/lib/client' {
 
 declare module 'redux-websocket/lib/server' {
   import {Actions, Protocol, WebSocketConnection} from 'redux-websocket/lib/common';
-  import {server as WebSocket, connection} from 'websocket';
+  import {server as WebSocket} from 'websocket';
 
   export class WebSocketServer implements WebSocketConnection {
     isServer: boolean
