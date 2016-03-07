@@ -17,7 +17,7 @@ describe('WebSocketServer', () => {
   it('should accept redux-websocket connections', () => {
     const connection = {on} as any
     const request = {accept: createMockFunction().returns(connection), origin: 'origin'}
-    const socket = new WebSocketServer(socketMock)
+    new WebSocketServer(socketMock)
 
     socketMock.onrequest(request)
 
@@ -91,6 +91,23 @@ describe('WebSocketServer', () => {
       type: 'test',
       data: 'message2',
     })])
+  })
+
+  it('should only delete the connection that was closed', () => {
+    const connection = {on} as any
+    const connection2 = {on} as any
+    const request = {accept: createMockFunction().returns(connection)}
+    const request2 = {accept: createMockFunction().returns(connection2)}
+    const socket = new WebSocketServer(socketMock) as any
+
+    socketMock.onrequest(request)
+    socketMock.onrequest(request2)
+
+    connection.onclose()
+
+    expect(socket.connections.length).to.equal(1)
+    expect(socket.connections).to.not.include(connection)
+    expect(socket.connections).to.include(connection2)
   })
 })
 

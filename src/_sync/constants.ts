@@ -1,4 +1,3 @@
-import {createActions} from 'redux-decorated'
 import {Protocol, WebSocketConnection} from '../common'
 
 export const dispatchAction = 'dispatchAction'
@@ -25,13 +24,13 @@ export const actions = {
   initialSyncedState: {
     type: 'initialSyncedState',
     meta: {
-      toClient: true
+      toClient: true,
     },
   },
   updateSyncedState: {
     type: 'updateSyncedState',
     meta: {
-      toClient: true
+      toClient: true,
     },
   },
 }

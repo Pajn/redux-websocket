@@ -3,7 +3,8 @@ import {server as WebSocket, connection} from 'websocket'
 import {Action, Actions, Protocol, WebSocketConnection} from './common'
 
 export class WebSocketServer implements WebSocketConnection {
-  connections: Array<connection> = []
+  readonly isServer = true
+  readonly connections: Array<connection> = []
   protocols = {}
 
   constructor(server: WebSocket) {
@@ -30,7 +31,7 @@ export class WebSocketServer implements WebSocketConnection {
       })
 
       connection.on('close', () => {
-        this.connections.splice(this.connections.indexOf(connection))
+        this.connections.splice(this.connections.indexOf(connection), 1)
       })
     })
   }

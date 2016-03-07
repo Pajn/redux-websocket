@@ -6,6 +6,7 @@ declare module 'redux-websocket/lib/common' {
   }
 
   export interface WebSocketConnection {
+    isServer: boolean
     registerProtocol(name: string, protocol: Protocol): void;
   }
 
@@ -23,6 +24,7 @@ declare module 'redux-websocket/lib/client' {
   import {Actions, Protocol, WebSocketConnection} from 'redux-websocket/lib/common';
 
   export class WebSocketClient implements WebSocketConnection {
+    isServer: boolean
     protocols: {};
     private socket: WebSocket;
     constructor(url: any);
@@ -37,9 +39,10 @@ declare module 'redux-websocket/lib/client' {
 
 declare module 'redux-websocket/lib/server' {
   import {Actions, Protocol, WebSocketConnection} from 'redux-websocket/lib/common';
-  import {server as WebSocket} from 'websocket';
+  import {server as WebSocket, connection} from 'websocket';
 
   export class WebSocketServer implements WebSocketConnection {
+    isServer: boolean
     constructor(webSocket: WebSocket);
     registerProtocol(name: string, protocol: Protocol): void;
   }

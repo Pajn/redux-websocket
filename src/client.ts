@@ -1,6 +1,7 @@
 import {Action, Actions, Protocol, WebSocketConnection} from './common'
 
 export class WebSocketClient implements WebSocketConnection {
+  readonly isServer = false
   protocols = {}
   socket: WebSocket
   open = false
@@ -10,7 +11,8 @@ export class WebSocketClient implements WebSocketConnection {
   }
 
   registerProtocol(name: string, protocol: Protocol) {
-    protocol.send = (message) => this.socket.send(JSON.stringify({type: name, data: message}))
+    protocol.send = message => this.socket.send(JSON.stringify({type: name, data: message}))
+
     this.protocols[name] = protocol
 
     if (this.open && protocol.onopen) {

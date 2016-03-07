@@ -5,6 +5,7 @@ export interface Protocol {
 }
 
 export interface WebSocketConnection {
+  isServer: boolean
   registerProtocol(name: string, protocol: Protocol): void
 }
 
