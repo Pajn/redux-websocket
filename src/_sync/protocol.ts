@@ -9,7 +9,7 @@ type CheckVersionFunction = (
 
 export function checkVersionFunction(skipVersion: string[]): CheckVersionFunction {
   return (getState, clientVersions, respond) => {
-    const newVersions = getNewVersions(clientVersions, getState, skipVersion);
+    const newVersions = getNewVersions(clientVersions, getState, skipVersion)
 
     if (newVersions) {
       respond({

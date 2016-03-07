@@ -21,5 +21,5 @@ export function getNewVersions(clientVersions, getState: () => any, skipVersion:
     })
   }
 
-  return updated && newVersions;
+  return updated && newVersions
 }
