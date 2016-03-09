@@ -1,8 +1,12 @@
 import {updateIn} from 'redux-decorated'
-import {actions, InitialSyncPayload, Settings, SyncProtocol} from './constants'
+import {actions, InitialSyncPayload, Settings, SyncClientProtocol} from './constants'
 import {applyChanges} from './find-changes'
 
-export const syncReducer = ({keys, skipVersion}: Settings, protocol: SyncProtocol, reducer) => {
+export const syncReducer = (
+    {keys, skipVersion}: Settings,
+    protocol: SyncClientProtocol,
+    reducer
+) => {
   function maintainVersion(key) {
     return !skipVersion || skipVersion.indexOf(key) === -1
   }

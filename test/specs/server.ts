@@ -1,4 +1,5 @@
 import {expect} from 'chai'
+import {ClientMode} from 'redux-websocket/lib/common'
 import {WebSocketServer, websocketMiddleware} from 'redux-websocket/lib/server'
 import {createMockFunction} from 'mock-functions'
 import {createMockSocket} from '../mocks/socket'
@@ -64,9 +65,10 @@ describe('WebSocketServer', () => {
     })
 
     expect(protocol.onmessage.calls.length).to.equal(1)
-    expect(protocol.onmessage.calls[0].args.length).to.equal(2)
+    expect(protocol.onmessage.calls[0].args.length).to.equal(3)
     expect(protocol.onmessage.calls[0].args[0]).to.equal('message')
     expect(protocol.onmessage.calls[0].args[1]).to.be.a('function')
+    expect(protocol.onmessage.calls[0].args[2]).to.be.a('string')
   })
 
   it('should provide a response function to the protocol', () => {
@@ -105,9 +107,8 @@ describe('WebSocketServer', () => {
 
     connection.onclose()
 
-    expect(socket.connections.length).to.equal(1)
-    expect(socket.connections).to.not.include(connection)
-    expect(socket.connections).to.include(connection2)
+    expect(Object.keys(socket.connections).length).to.equal(1)
+    expect(socket.connections[Object.keys(socket.connections)[0]]).to.equal(connection2)
   })
 })
 
@@ -141,11 +142,13 @@ describe('serverMiddleware', () => {
     const dispatch = websocketMiddleware({socket, actions: {}})(null)(dispatchMock)
     socket.protocols['action'].send = createMockFunction()
 
-    dispatch({type: 'dispatched', meta: {toClient: true}})
+    dispatch({type: 'dispatched', meta: {toClient: true, toClientMode: ClientMode.sameStore}})
 
     expect(dispatchMock.calls.length).to.equal(1)
     const firstCall = dispatchMock.calls[0]
-    expect(firstCall.args).to.deep.equal([{type: 'dispatched', meta: {toClient: true}}])
+    expect(firstCall.args).to.deep.equal([
+      {type: 'dispatched', meta: {toClient: true, toClientMode: ClientMode.sameStore}},
+    ])
   })
 
   it('should send dispatched actions with meta.toClient to the socket', () => {
@@ -153,14 +156,16 @@ describe('serverMiddleware', () => {
     const dispatch = websocketMiddleware({socket, actions: {}})(null)(createMockFunction())
     const sendMock = socket.protocols['action'].send = createMockFunction()
 
-    dispatch({type: 'dispatched', meta: {toClient: true}})
+    dispatch({type: 'dispatched', meta: {toClient: true, toClientMode: ClientMode.broadcast}})
 
     expect(sendMock.calls.length).to.equal(1)
     const firstCall = sendMock.calls[0]
-    expect(firstCall.args).to.deep.equal([{action: {type: 'dispatched', meta: {
+    expect(firstCall.args[0]).to.deep.equal({action: {type: 'dispatched', meta: {
       toClient: true,
+      toClientMode: ClientMode.broadcast,
       fromServer: true,
-    }}}])
+    }}})
+    expect(firstCall.args[1]).not.to.be.a('function')
   })
 
   it('should not send dispatched actions without meta.toServer to the socket', () => {
@@ -175,7 +180,7 @@ describe('serverMiddleware', () => {
 
   it('should send dispatched actions with meta.toClient in actions to the socket', () => {
     const socket = createMockSocket()
-    const actions = {dispatched: {meta: {toClient: true}}}
+    const actions = {dispatched: {meta: {toClient: true, toClientMode: ClientMode.broadcast}}}
     const dispatch = websocketMiddleware({socket, actions})(null)(createMockFunction())
     const sendMock = socket.protocols['action'].send = createMockFunction()
 
@@ -183,6 +188,7 @@ describe('serverMiddleware', () => {
 
     expect(sendMock.calls.length).to.equal(1)
     const firstCall = sendMock.calls[0]
-    expect(firstCall.args).to.deep.equal([{action: {type: 'dispatched', meta: {fromServer: true}}}])
+    expect(firstCall.args[0]).to.deep.equal({action: {type: 'dispatched', meta: {fromServer: true}}})
+    expect(firstCall.args[1]).not.to.be.a('function')
   })
 })

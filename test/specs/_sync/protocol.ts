@@ -2,7 +2,11 @@
 
 import {expect} from 'chai'
 import {actions, checkVersion, dispatchAction} from 'redux-websocket/lib/_sync/constants'
-import {checkVersionFunction, createProtocol} from 'redux-websocket/lib/_sync/protocol'
+import {
+  checkVersionFunction,
+  createClientProtocol,
+  createServerProtocol,
+} from 'redux-websocket/lib/_sync/protocol'
 import {createMockFunction} from 'mock-functions'
 
 describe('sync/protocol', () => {
@@ -14,10 +18,9 @@ describe('sync/protocol', () => {
       it('should call the checkVersionFunction when checkVersion are received', () => {
         const checkVersionMock = createMockFunction()
         const getStateMock = createMockFunction()
-        const protocol = createProtocol(
+        const protocol = createServerProtocol(
           checkVersionMock,
-          getStateMock,
-          createMockFunction()
+          getStateMock
         )
         const versions = {}
         const respondMock = createMockFunction()
@@ -33,8 +36,7 @@ describe('sync/protocol', () => {
 
       it('should dispatch actions defined by this module', () => {
         const dispatchMock = createMockFunction()
-        const protocol = createProtocol(
-          createMockFunction(),
+        const protocol = createClientProtocol(
           createMockFunction(),
           dispatchMock
         )
@@ -48,8 +50,7 @@ describe('sync/protocol', () => {
 
       it('should not dispatch actions not defined by this module', () => {
         const dispatchMock = createMockFunction()
-        const protocol = createProtocol(
-          createMockFunction(),
+        const protocol = createClientProtocol(
           createMockFunction(),
           dispatchMock
         )
@@ -62,8 +63,8 @@ describe('sync/protocol', () => {
 
     describe('maybeCheckVersion', () => {
       it('should call send only after both onopen and setRehydrationCompleted have been called', () => {
-        const protocol1 = createProtocol(null, createMockFunction().returns({}), null)
-        const protocol2 = createProtocol(null, createMockFunction().returns({}), null)
+        const protocol1 = createClientProtocol(createMockFunction().returns({}), null)
+        const protocol2 = createClientProtocol(createMockFunction().returns({}), null)
         protocol1.send = createMockFunction()
         protocol2.send = createMockFunction()
 
@@ -90,8 +91,7 @@ describe('sync/protocol', () => {
       })
 
       it('should send the current versions', () => {
-        const protocol = createProtocol(
-          null,
+        const protocol = createClientProtocol(
           createMockFunction().returns({key: {prop: 1}, versions: {key: 1}}),
           null
         )

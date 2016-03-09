@@ -1,78 +1,67 @@
-import {RemoteProceduresDecorator, RpcSettings} from './index'
+import {nameSymbol, timeoutSymbol} from './index'
 import {WebSocketClient} from '../client'
-import {Protocol} from '../common'
+import {ClientProtocol} from '../common'
 
-type RpcClientSettings = {
+export type RpcClientSettings = {
   /**
    * Optional id to use for connecting to an RPC server with a non-empty id
    */
   id?: string|number
   socket: WebSocketClient
+  rpcObjects: Object[]
 }
 
-type RpcClient = {
-  remoteProcedures: RemoteProceduresDecorator,
-}
-
-export function createRpcClient({socket, id}: RpcClientSettings): RpcClient {
+export function createRpcClient({socket, id, rpcObjects}: RpcClientSettings) {
   let nextCallId = 0
 
   const waitingCalls = {}
-  const webSocketProtocol: Protocol = {
+  const webSocketProtocol: ClientProtocol = {
     onmessage({id, error, value}) {
       const call = waitingCalls[id]
       if (call) {
-        call(error, value);
+        call(error, value)
       }
     },
   }
 
   socket.registerProtocol(`rpc${id || ''}`, webSocketProtocol)
 
-  function remoteProcedures({name, timeout}: RpcSettings = {}): ClassDecorator {
-    timeout = timeout === undefined ? 10000 : timeout
+  rpcObjects.forEach(rpcObject => {
+    const constructor = rpcObject.constructor
+    const className = constructor[nameSymbol] || constructor.name
+    const timeout = constructor[timeoutSymbol] === undefined ? 10000 : constructor[timeoutSymbol]
+    const methods = Object.getOwnPropertyNames(constructor.prototype)
+      .filter(key => key !== 'constructor')
+      .filter(key => typeof constructor.prototype[key] === 'function')
 
-    return target => {
-      const className = name || target.name
-      const methods = Object.getOwnPropertyNames(target.prototype)
-        .filter(key => key !== 'constructor')
-        .filter(key => typeof target.prototype[key] === 'function')
+    methods.forEach(methodName => {
+      rpcObject[methodName] = (...args) => {
+        const callId = nextCallId++
 
-      function Class() {}
+        webSocketProtocol.send({
+          id: callId,
+          className,
+          methodName,
+          args,
+        })
 
-      methods.forEach(methodName => {
-        Class.prototype[methodName] = (...args) => {
-          const callId = nextCallId++
+        return new Promise((resolve, reject) => {
+          const timeoutId = setTimeout(() => {
+            delete waitingCalls[callId]
+            reject('timeout reached')
+          }, timeout)
 
-          webSocketProtocol.send({
-            id: callId,
-            className,
-            methodName,
-            args,
-          })
-
-          return new Promise((resolve, reject) => {
-            const timeoutId = setTimeout(() => {
-              delete waitingCalls[callId]
-              reject('timeout reached')
-            }, timeout)
-
-            waitingCalls[callId] = (error, value) => {
-              clearTimeout(timeoutId)
-              delete waitingCalls[callId]
-              if (error) {
-                reject(error)
-              } else {
-                resolve(value)
-              }
+          waitingCalls[callId] = (error, value) => {
+            clearTimeout(timeoutId)
+            delete waitingCalls[callId]
+            if (error) {
+              reject(error)
+            } else {
+              resolve(value)
             }
-          })
-        }
-      })
-
-      return Class
-    }
-  }
-
-  return {remoteProcedures}
+          }
+        })
+      }
+    })
+  })
 }

@@ -1,4 +1,4 @@
-import {Action, Actions, Protocol, WebSocketConnection} from './common'
+import {Action, Actions, ClientProtocol, WebSocketConnection} from './common'
 
 export class WebSocketClient implements WebSocketConnection {
   readonly isServer = false
@@ -10,7 +10,7 @@ export class WebSocketClient implements WebSocketConnection {
     this.connect(url, onOpen)
   }
 
-  registerProtocol(name: string, protocol: Protocol) {
+  registerProtocol(name: string, protocol: ClientProtocol) {
     protocol.send = message => this.socket.send(JSON.stringify({type: name, data: message}))
 
     this.protocols[name] = protocol
@@ -61,7 +61,7 @@ export const websocketMiddleware = ({socket, actions}: Settings) => store => nex
     actions = {}
   }
 
-  const protocol: Protocol = {
+  const protocol: ClientProtocol = {
     onmessage({action}) {
       next(action)
     },

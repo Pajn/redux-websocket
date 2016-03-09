@@ -34,15 +34,15 @@ describe('sync/middlewares', () => {
       const store = {
         getState: createMockFunction()
           .returns(0, {})
-          .returns(1, {prop: 'new', versions: {prop: 2}})
+          .returns(1, {prop: 'new', versions: {prop: 2}}),
       }
-      const protocol = {send: createMockFunction()}
+      const protocol = {sendToStoreClients: createMockFunction()}
       const dispatch = diffingMiddleware({keys: ['prop']}, protocol)(store)(dispatchMock)
 
       dispatch({type: 'dispatched'})
 
-      expect(protocol.send.calls.length).to.equal(1)
-      expect(protocol.send.calls[0].args).to.deep.equal([{
+      expect(protocol.sendToStoreClients.calls.length).to.equal(1)
+      expect(protocol.sendToStoreClients.calls[0].args).to.deep.equal([{
         type: dispatchAction,
         payload: {
           type: actions.updateSyncedState.type,

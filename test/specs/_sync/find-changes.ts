@@ -1,13 +1,7 @@
 'use strict'
 
 import {expect} from 'chai'
-import {
-  findChanges,
-  findVersionedChanges,
-  applyChanges,
-} from 'redux-websocket/lib/_sync/find-changes'
-import {createMockFunction} from 'mock-functions'
-import {createMockSocket} from '../../mocks/socket'
+import {findChanges} from 'redux-websocket/lib/_sync/find-changes'
 
 
 describe('sync/find-changes', () => {

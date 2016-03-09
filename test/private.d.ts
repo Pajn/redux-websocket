@@ -71,10 +71,14 @@ declare module 'redux-websocket/lib/_sync/protocol' {
 
   export function checkVersionFunction(skipVersion: string[]): CheckVersionFunction
 
-  export function createProtocol(
-      checkVersionFunction: CheckVersionFunction,
+  export function createClientProtocol(
       getState: () => any,
       dispatch: (action) => void
+  )
+
+  export function createServerProtocol(
+      checkVersionFunction: CheckVersionFunction,
+      getState: () => any
   )
 }
 

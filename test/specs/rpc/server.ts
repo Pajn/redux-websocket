@@ -10,7 +10,7 @@ describe('rpc', () => {
     it('should register a protocol id if passed', () => {
       const socket = createMockSocket()
 
-      createRpcServer({socket, id: 'test'})
+      createRpcServer({socket, id: 'test', rpcObjects: []})
 
       expect(socket.protocols['rpc']).to.be.undefined
       expect(socket.protocols['rpctest']).to.exist
@@ -18,8 +18,8 @@ describe('rpc', () => {
 
     it('should respond with an error if the class is missing', async () => {
       const socket = createMockSocket()
-      createRpcServer({socket})
-      const respondMock = createMockFunction();
+      createRpcServer({socket, rpcObjects: []})
+      const respondMock = createMockFunction()
 
       await socket.protocols['rpc'].onmessage({
         id: 1,
@@ -36,13 +36,11 @@ describe('rpc', () => {
     })
 
     it('should respond with an error if the method is missing', async () => {
-      const socket = createMockSocket()
-      const remoteProcedures = createRpcServer({socket}).remoteProcedures
-      const respondMock = createMockFunction()
+      const object = new class Class {}
 
-      // TODO: TS doesn't seem to compile to a class with name ??
-      @remoteProcedures({name: 'Class'})
-      class Class {}
+      const socket = createMockSocket()
+      createRpcServer({socket, rpcObjects: [object]})
+      const respondMock = createMockFunction()
 
       await socket.protocols['rpc'].onmessage({
         id: 1,
@@ -59,17 +57,15 @@ describe('rpc', () => {
     })
 
     it('should respond with the value of the method', async () => {
-      const socket = createMockSocket()
-      const remoteProcedures = createRpcServer({socket}).remoteProcedures
-      const respondMock = createMockFunction()
-
-      // TODO: TS doesn't seem to compile to a class with name ??
-      @remoteProcedures({name: 'Class'})
-      class Class {
+      const object = new class Class {
         method() {
-          return 'returnValue';
+          return 'returnValue'
         }
       }
+
+      const socket = createMockSocket()
+      createRpcServer({socket, rpcObjects: [object]})
+      const respondMock = createMockFunction()
 
       await socket.protocols['rpc'].onmessage({
         id: 1,
@@ -86,17 +82,15 @@ describe('rpc', () => {
     })
 
     it('should respond with unkown error when the method thows', async () => {
-      const socket = createMockSocket()
-      const remoteProcedures = createRpcServer({socket}).remoteProcedures
-      const respondMock = createMockFunction()
-
-      // TODO: TS doesn't seem to compile to a class with name ??
-      @remoteProcedures({name: 'Class'})
-      class Class {
+      const object = new class Class {
         method() {
-          throw 'error';
+          throw 'error'
         }
       }
+
+      const socket = createMockSocket()
+      createRpcServer({socket, rpcObjects: [object]})
+      const respondMock = createMockFunction()
 
       await socket.protocols['rpc'].onmessage({
         id: 1,
@@ -113,17 +107,15 @@ describe('rpc', () => {
     })
 
     it('should respond with the client error thrown by the method', async () => {
-      const socket = createMockSocket()
-      const remoteProcedures = createRpcServer({socket}).remoteProcedures
-      const respondMock = createMockFunction()
-
-      // TODO: TS doesn't seem to compile to a class with name ??
-      @remoteProcedures({name: 'Class'})
-      class Class {
+      const object = new class Class {
         method() {
-          throw clientError('other error');
+          throw clientError('other error')
         }
       }
+
+      const socket = createMockSocket()
+      createRpcServer({socket, rpcObjects: [object]})
+      const respondMock = createMockFunction()
 
       await socket.protocols['rpc'].onmessage({
         id: 1,
@@ -140,18 +132,16 @@ describe('rpc', () => {
     })
 
     it('should call the method with provided args', async () => {
-      const socket = createMockSocket()
-      const remoteProcedures = createRpcServer({socket}).remoteProcedures
-      const respondMock = createMockFunction()
       const method = createMockFunction()
-
-      // TODO: TS doesn't seem to compile to a class with name ??
-      @remoteProcedures({name: 'Class'})
-      class Class {
+      const object = new class Class {
         method(...args) {
           method(args)
         }
       }
+
+      const socket = createMockSocket()
+      createRpcServer({socket, rpcObjects: [object]})
+      const respondMock = createMockFunction()
 
       await socket.protocols['rpc'].onmessage({
         id: 1,

@@ -27,7 +27,8 @@
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
-    "redux-decorated": "^0.2.0-dev.3"
+    "redux-decorated": "^0.2.0-dev.3",
+    "uuid": "^2.0.1"
   },
   "peerDependencies": {
     "redux": "3.x"
@@ -48,6 +49,7 @@
     "retyped-chai-tsd-ambient": "^3.4.0-0",
     "retyped-mocha-tsd-ambient": "^2.2.5-0",
     "retyped-node-tsd-ambient": "^1.5.3-0",
+    "retyped-node-uuid-tsd-ambient": "0.0.0-0",
     "retyped-promises-a-plus-tsd-ambient": "^0.0.0-0",
     "retyped-redux-tsd-ambient": "^1.0.0-0",
     "retyped-websocket-tsd-ambient": "^0.0.0-0",

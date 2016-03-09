@@ -1,12 +1,12 @@
 import {removeIn, updateIn} from 'redux-decorated'
 
-type Changes = Array<{
+export type Changes = Array<{
   path: string[]
   value?: any
   removed?: boolean
 }>
 
-type VersionedChanges = Array<{
+export type VersionedChanges = Array<{
   key: string
   changes: Changes
   version: number

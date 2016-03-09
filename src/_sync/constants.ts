@@ -1,4 +1,4 @@
-import {Protocol, WebSocketConnection} from '../common'
+import {ClientProtocol, ServerProtocol, WebSocketConnection} from '../common'
 
 export const dispatchAction = 'dispatchAction'
 export const checkVersion = 'checkVersion'
@@ -15,9 +15,13 @@ export type InitialSyncPayload = {
   state: Object
 }
 
-export type SyncProtocol = Protocol & {
+export type SyncClientProtocol = ClientProtocol & {
   setRehydrationCompleted(): void
   maybeCheckVersion(): void
+}
+
+export type SyncServerProtocol = ServerProtocol & {
+  sendToStoreClients(message): void
 }
 
 export const actions = {

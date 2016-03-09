@@ -10,6 +10,13 @@ export type RpcSettings = {
   timeout?: number
 }
 
+export type RpcContext = {
+  connectionId: string
+}
+
+export const nameSymbol = Symbol('name')
+export const timeoutSymbol = Symbol('timeout')
+
 export function clientError(message: string) {
   return {
     name: 'clientError',
@@ -18,6 +25,15 @@ export function clientError(message: string) {
   }
 }
 
-export interface RemoteProceduresDecorator {
-  (settings: RpcSettings): ClassDecorator
+export function remoteProcedures({name, timeout = 10000}: RpcSettings = {}): ClassDecorator {
+  return target => {
+    target[nameSymbol] = name
+    target[timeoutSymbol] = timeout
+  }
+}
+
+export function createFromAbstract(abstractClass) {
+  const obj = {__proto__: abstractClass.prototype}
+  obj.constructor = abstractClass
+  return obj
 }

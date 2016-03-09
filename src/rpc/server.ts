@@ -1,41 +1,40 @@
-import {clientError, RemoteProceduresDecorator, RpcSettings} from './index'
-import {Protocol} from '../common'
+import {clientError, nameSymbol, RpcContext} from './index'
+import {ServerProtocol} from '../common'
 import {WebSocketServer} from '../server'
 export {clientError}
 
-type RpcServerSettings = {
+export type RpcServerSettings = {
   /**
    * Optional id to use when handling multiple RPC servers on a single WebSocketServer.
    * The same id must be specified on the client.
    */
   id?: string|number
   socket: WebSocketServer
+  rpcObjects: Object[]
   logger?: {
     info(message?: any, ...optionalParams: any[]): void
     warn(message?: any, ...optionalParams: any[]): void
   }
 }
 
-type RpcServer = {
-  remoteProcedures: RemoteProceduresDecorator,
-}
-
-export function createRpcServer({socket, id, logger}: RpcServerSettings): RpcServer {
+export function createRpcServer({socket, id, rpcObjects, logger}: RpcServerSettings) {
   const procedures = {}
+  const rpcId = `rpc${id || ''}`
 
-  const webSocketProtocol: Protocol = {
-    async onmessage({id, className, methodName, args}, respond): Promise<void> {
+  const webSocketProtocol: ServerProtocol = {
+    async onmessage({id, className, methodName, args}, respond, connectionId): Promise<void> {
       const object = procedures[className]
       if (!object) return respond({id, error: 'no such class'})
       const procedure = object[methodName]
       if (!procedure) return respond({id, error: 'no such method'})
 
       try {
-        const value = await procedure.apply(null, args)
+        const context: RpcContext = {connectionId}
+        const value = await procedure.apply(context, args)
         respond({id, value})
       } catch (error) {
         if (logger) {
-          logger.warn(`rpc${id || ''}: ${className}.${methodName}:`, error, error && error.stack)
+          logger.warn(`${rpcId}: ${className}.${methodName}:`, error, error && error.stack)
         }
         error = (error && error.clientError) || 'Unkown Error'
         respond({id, error})
@@ -43,19 +42,16 @@ export function createRpcServer({socket, id, logger}: RpcServerSettings): RpcSer
     },
   }
 
-  socket.registerProtocol(`rpc${id || ''}`, webSocketProtocol)
+  socket.registerProtocol(rpcId, webSocketProtocol)
 
-  function remoteProcedures({name}: RpcSettings = {}): ClassDecorator {
-    return target => {
-      const className = name || target.name
-      if (logger) {
-        logger.info(`rpc${id || ''}: register [${className}]`)
-      }
-      const object = new target()
+  rpcObjects.forEach(rpcObject => {
+    const constructor = rpcObject.constructor
+    const className = constructor[nameSymbol] || constructor.name
 
-      procedures[className] = object
+    if (logger) {
+      logger.info(`${rpcId}: register [${className}]`)
     }
-  }
 
-  return {remoteProcedures}
+    procedures[className] = rpcObject
+  })
 }

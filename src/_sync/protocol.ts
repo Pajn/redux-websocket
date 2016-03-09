@@ -1,7 +1,13 @@
-import {actions, checkVersion, dispatchAction, SyncProtocol} from './constants'
+import {
+  actions,
+  checkVersion,
+  dispatchAction,
+  SyncClientProtocol,
+  SyncServerProtocol,
+} from './constants'
 import {getNewVersions} from './get-new-versions'
 
-type CheckVersionFunction = (
+export type CheckVersionFunction = (
   getState: () => any,
   clientVersions,
   respond: (message) => void
@@ -20,15 +26,14 @@ export function checkVersionFunction(skipVersion: string[]): CheckVersionFunctio
   }
 }
 
-export function createProtocol(
-    checkVersionFunction: CheckVersionFunction,
+export function createClientProtocol(
     getState: () => any,
     dispatch: (action) => void
 ) {
   let rehydrationCompleted = false
   let webSocketOpened = false
 
-  const protocol: SyncProtocol = {
+  const protocol: SyncClientProtocol = {
     onopen() {
       webSocketOpened = true
       this.maybeCheckVersion()
@@ -36,10 +41,6 @@ export function createProtocol(
 
     onmessage({type, payload}, respond) {
       switch (type) {
-        case checkVersion:
-          checkVersionFunction(getState, payload.versions, respond)
-          break
-
         case dispatchAction:
           if (actions[payload.type]) {
             dispatch(payload)
@@ -61,3 +62,31 @@ export function createProtocol(
 
   return protocol
 }
+
+export function createServerProtocol(
+    checkVersionFunction: CheckVersionFunction,
+    getState: () => any
+) {
+  const connections = {}
+
+  const protocol: SyncServerProtocol = {
+    onclose(connectionId) {
+      delete connections[connectionId]
+    },
+
+    onmessage({type, payload}, respond) {
+      switch (type) {
+        case checkVersion:
+          checkVersionFunction(getState, payload.versions, respond)
+          break
+      }
+    },
+
+    sendToStoreClients(message) {
+      Object.keys(connections).forEach(connectionId => this.sendTo(connectionId, message))
+    },
+  }
+
+  return protocol
+}
+

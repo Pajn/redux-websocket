@@ -127,14 +127,21 @@ describe('sync/syncReducer', () => {
 
     it('should bump the version of changed key', () => {
       const reducerMock = trackCalls(state => ({
-        ignore: 2, skip: 2, bump: 2, new: 1, keep: state.keep
+        ignore: 2, skip: 2, bump: 2, new: 1, keep: state.keep,
       }))
-      const reducer = syncReducer({keys: ['skip', 'keep', 'bump', 'new'], skipVersion: ['skip']}, null, reducerMock)
+      const reducer = syncReducer(
+        {keys: ['skip', 'keep', 'bump', 'new'], skipVersion: ['skip']},
+        null,
+        reducerMock
+      )
 
-      const result = reducer({ignore: 1, skip: 1, keep: 1, bump: 1, versions: {bump: 1}}, {type: 'other'})
+      const result = reducer(
+        {ignore: 1, skip: 1, keep: 1, bump: 1, versions: {bump: 1}},
+        {type: 'other'}
+      )
 
       expect(result).to.deep.equal({
-        ignore: 2, skip: 2, bump: 2, keep: 1, new: 1, versions: {bump: 2, new: 1}
+        ignore: 2, skip: 2, bump: 2, keep: 1, new: 1, versions: {bump: 2, new: 1},
       })
     })
   })
