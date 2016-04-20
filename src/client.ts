@@ -54,9 +54,10 @@ export class WebSocketClient implements WebSocketConnection {
 type Settings = {
   actions?: Actions
   socket: WebSocketClient
+  id?: string
 }
 
-export const websocketMiddleware = ({socket, actions}: Settings) => store => next => {
+export const websocketMiddleware = ({socket, actions, id}: Settings) => store => next => {
   if (!actions) {
     actions = {}
   }
@@ -67,7 +68,7 @@ export const websocketMiddleware = ({socket, actions}: Settings) => store => nex
     },
   }
 
-  socket.registerProtocol('action', protocol)
+  socket.registerProtocol(`action-${id}`, protocol)
 
   return (action: Action) => {
     const meta = action.meta || (actions[action.type] && actions[action.type].meta)

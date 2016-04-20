@@ -31,9 +31,3 @@ export function remoteProcedures({name, timeout = 10000}: RpcSettings = {}): Cla
     target[timeoutSymbol] = timeout
   }
 }
-
-export function createFromAbstract(abstractClass) {
-  const obj = {__proto__: abstractClass.prototype}
-  obj.constructor = abstractClass
-  return obj
-}

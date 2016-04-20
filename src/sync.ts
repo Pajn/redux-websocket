@@ -19,6 +19,8 @@ export const syncStoreEnhancer = (settings: Settings) => next => (reducer, initi
 
   const dispatch = trackRehydrationMiddleware(settings, protocol)(store)(store.dispatch)
 
+  settings.socket.registerProtocol('sync', protocol)
+
   return Object.assign({}, store, {dispatch})
 }
 

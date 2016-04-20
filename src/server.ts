@@ -71,13 +71,14 @@ export class WebSocketServer implements WebSocketConnection {
 }
 
 type Settings = {
-  actions: Actions,
-  socket: WebSocketServer,
+  actions: Actions
+  socket: WebSocketServer
+  connections?: {[connectionId: string]: any}
+  id?: string
 }
 
-export const websocketMiddleware = ({socket, actions}: Settings) => store => next => {
-
-  const connections = {}
+export const websocketMiddleware = ({socket, actions, connections = {}, id}: Settings) =>
+  store => next => {
 
   const protocol: ServerProtocol = {
     onconnection(connectionId) {
@@ -101,7 +102,7 @@ export const websocketMiddleware = ({socket, actions}: Settings) => store => nex
     },
   }
 
-  socket.registerProtocol('action', protocol)
+  socket.registerProtocol(`action-${id}`, protocol)
 
   return (action: Action) => {
     const meta = action.meta || (actions[action.type] && actions[action.type].meta)

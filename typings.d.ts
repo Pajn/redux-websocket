@@ -65,8 +65,12 @@ declare module 'redux-websocket/lib/client' {
   }
 
   export function websocketMiddleware(settings: {
-    actions?: Actions,
-    socket: WebSocketClient,
+    actions?: Actions
+    socket: WebSocketClient
+    /**
+     * Optional id to use for connecting to an redux websocket server with a non-empty id
+     */
+    id?: string,
   }): (store: any) => (next: any) => (action: any) => any
 }
 
@@ -82,7 +86,13 @@ declare module 'redux-websocket/lib/server' {
 
   export function websocketMiddleware(settings: {
     actions: Actions
-    socket: WebSocketServer
+    socket: WebSocketServer,
+    /**
+     * Optional id to use when handling multiple redux websocket servers on a single
+     * WebSocketServer.
+     * The same id must be specified on the client.
+     */
+    id?: string
   }): (store: any) => (next: any) => (action: any) => any
 }
 
@@ -131,8 +141,6 @@ declare module 'redux-websocket/lib/rpc' {
   export function clientError(message: string)
 
   export function remoteProcedures(settings?: RpcSettings): ClassDecorator
-
-  export function createFromAbstract(abstractClass): any
 }
 
 declare module 'redux-websocket/lib/rpc/client' {
