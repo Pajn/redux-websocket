@@ -86,13 +86,17 @@ declare module 'redux-websocket/lib/server' {
 
   export function websocketMiddleware(settings: {
     actions: Actions
-    socket: WebSocketServer,
+    socket: WebSocketServer
     /**
      * Optional id to use when handling multiple redux websocket servers on a single
      * WebSocketServer.
      * The same id must be specified on the client.
      */
     id?: string
+    /**
+     * Optinally pass in existing connections when created
+     */
+    connections?: {[connectionId: string]: any}
   }): (store: any) => (next: any) => (action: any) => any
 }
 
