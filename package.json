@@ -1,6 +1,6 @@
 {
   "name": "redux-websocket",
-  "version": "0.2.0-dev.5",
+  "version": "0.2.0-dev.6",
   "description": "Aid for fullstack Redux applications",
   "main": "index.js",
   "scripts": {
@@ -27,8 +27,8 @@
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
-    "redux-decorated": "^0.2.0-dev.3",
-    "uuid": "^2.0.1"
+    "node-uuid": "^1.4.7",
+    "redux-decorated": "^0.2.0-dev.3"
   },
   "peerDependencies": {
     "redux": "3.x"
