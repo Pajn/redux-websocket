@@ -5,18 +5,42 @@ export class WebSocketClient implements WebSocketConnection {
   protocols = {}
   socket: WebSocket
   open = false
+  private messagesToSend = []
+  private timeoutId
 
   constructor({url, onOpen}: {url: string, onOpen: Function}) {
     this.connect(url, onOpen)
   }
 
   registerProtocol(name: string, protocol: ClientProtocol) {
-    protocol.send = message => this.socket.send(JSON.stringify({type: name, data: message}))
+    protocol.send = message => this.send(JSON.stringify({type: name, data: message}))
 
     this.protocols[name] = protocol
 
     if (this.open && protocol.onopen) {
       protocol.onopen()
+    }
+  }
+
+  send(message: string) {
+    if (this.socket.readyState === this.socket.OPEN) {
+      this.socket.send(message)
+    } else {
+      if (this.timeoutId) clearTimeout(this.timeoutId)
+
+      this.timeoutId = setTimeout(() => this.sendBuffered(), 500)
+      this.messagesToSend.push(message)
+    }
+  }
+
+  sendBuffered() {
+    if (this.socket.readyState === this.socket.OPEN) {
+      this.messagesToSend.forEach(message => this.socket.send(message))
+      this.messagesToSend = []
+    } else {
+      if (this.timeoutId) clearTimeout(this.timeoutId)
+
+      this.timeoutId = setTimeout(() => this.sendBuffered(), 500)
     }
   }
 

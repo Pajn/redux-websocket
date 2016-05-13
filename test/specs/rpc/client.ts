@@ -74,7 +74,7 @@ describe('rpc', () => {
       return expect(object.method()).to.eventually.be.rejectedWith('server')
     })
 
-    it('should timout if no response is given', async () => {
+    it('should timeout if no response is given', async () => {
       class Class {
         method() {}
       }
